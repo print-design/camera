@@ -227,7 +227,7 @@ int main(int argc, char* argv[])
         }
 
         unsigned int nIndex = 0;
-        while (1)
+        /*while (1)
         {
             printf("Please Input camera index(0-%d): ", stDeviceList.nDeviceNum - 1);
 
@@ -256,7 +256,7 @@ int main(int argc, char* argv[])
                     ;
                 }
             }
-        }
+        }*/
 
         nRet = MV_CC_CreateHandle(&handle, stDeviceList.pDeviceInfo[nIndex]);
         if (MV_OK != nRet)
@@ -351,7 +351,7 @@ int main(int argc, char* argv[])
         printf("\n[0] OpenCV_Mat\n");
         printf("[1] OpenCV_IplImage\n");
         int nFormat = 0;
-        while (1)
+        /*while (1)
         {
             printf("Please Input Format to convert: ");
 
@@ -366,7 +366,7 @@ int main(int argc, char* argv[])
             {
                 ;
             }
-        }
+        }*/
 
         bool bConvertRet = false;
         if (OpenCV_Mat == nFormat)
