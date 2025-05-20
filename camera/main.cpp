@@ -35,7 +35,10 @@ int main(int argc, char* argv[])
         cv::imshow("Output Window", image);
         if (cv::waitKey(1) >= 0) break;
     }
-}*/
+}
+
+https://programmersought.com/article/92047634591/
+*/
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -104,9 +107,80 @@ void RGB2BGR(unsigned char* pRgbData, unsigned int nWidth, unsigned int nHeight)
 
 bool Convert2Mat(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
 {
-    printf("Beginning...\n");
+    if (NULL == pstImageInfo || NULL == pData)
+    {
+        printf("NULL info or data.\n");
+        return false;
+    }
+
+    Mat srcImage;
+
+    // Правильный тип - PixelType_Gvsp_BayerRG8
+    if (PixelType_Gvsp_Mono8 == pstImageInfo->enPixelType)
+    {
+        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC1, pData);
+    }
+    else if (PixelType_Gvsp_RGB8_Packed == pstImageInfo->enPixelType)
+    {
+        RGB2BGR(pData, pstImageInfo->nWidth, pstImageInfo->nHeight);
+        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC3, pData);
+    }
+    else if (PixelType_Gvsp_BayerRG8 == pstImageInfo->enPixelType)
+    {
+        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC1, pData);
+    }
+    else
+    {
+        /* Bayer 格式转换mat格式的方法:
+        1. 使用相机句柄销毁前 调用 MV_CC_ConvertPixelType 将PixelType_Gvsp_BayerRG8 等Bayer格式转换成 PixelType_Gvsp_BGR8_Packed
+        2. 参考上面 将BGR转换为 mat格式
+
+        Method to convert Bayer format to mat format:
+        1. Call MV_CC_ConvertPixelType to convert Bayer formats such as PixelType_Gvsp_BayerRG8 to PixelType_Gvsp_BGR8_Packed before destroying the camera handle
+        2. Refer to the above to convert BGR to mat format
+        */
+
+        printf("Unsupported pixel format\n");
+        return false;
+    }
+
+    if (NULL == srcImage.data)
+    {
+        printf("Create Mat failed.\n");
+        return false;
+    }
+
+    /*try
+    {
+        imwrite("ImageMat.bmp", srcImage);
+    }
+    catch (cv::Exception& ex)
+    {
+        fprintf(stderr, "Exeption in saving mat image: %s\n", ex.what());
+    }*/
+
+    /*
+    
+    
+    Mat img = imread("Schluse.jpg", 1);
+    if (img.empty()) return -1;
+    namedWindow("Image", WINDOW_AUTOSIZE);
+    imshow("Image", img);
+    waitKey(0);
+    destroyWindow("Image");
     return 0;
-    //
+    
+    
+    */
+
+    namedWindow("Image", WINDOW_AUTOSIZE);
+    imshow("Image", srcImage);
+    waitKey(0);
+    destroyWindow("Image");
+
+    srcImage.release();
+
+    return true;
 }
 
 bool Convert2Ipl(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
@@ -373,11 +447,11 @@ int main(int argc, char* argv[])
     }
     return 0;*/
 
-    Mat img = imread("Schluse.jpg", 1);
+    /*Mat img = imread("Schluse.jpg", 1);
     if (img.empty()) return -1;
     namedWindow("Image", WINDOW_AUTOSIZE);
     imshow("Image", img);
     waitKey(0);
-    destroyWindow("Image");
+    destroyWindow("Image");*/
     return 0;
 }
