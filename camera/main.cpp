@@ -45,6 +45,12 @@ int main(int argc, char* argv[])
 using namespace cv;
 using namespace std;
 
+enum CONVERT_TYPE
+{
+    OpenCV_Mat = 0,    // ch:Mat图像格式 | en:Mat format
+    OpenCV_IplImage = 1,    // ch:IplImage图像格式 | en:IplImage format
+};
+
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
     if (NULL == pstMVDevInfo)
@@ -75,6 +81,38 @@ void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
     {
         printf("    Not support.\n\n");
     }
+}
+
+void RGB2BGR(unsigned char* pRgbData, unsigned int nWidth, unsigned int nHeight)
+{
+    if (NULL == pRgbData)
+    {
+        return;
+    }
+
+    // red和blue数据互换
+    for (unsigned int j = 0; j < nHeight; j++)
+    {
+        for (unsigned int i = 0; i < nWidth; i++)
+        {
+            unsigned char red = pRgbData[j * (nWidth * 3) + i * 3];
+            pRgbData[j * (nWidth * 3) + i * 3] = pRgbData[j * (nWidth * 3) + i * 3 + 2];
+            pRgbData[j * (nWidth * 3) + i * 3 + 2] = red;
+        }
+    }
+}
+
+bool Convert2Mat(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
+{
+    printf("Beginning...\n");
+    return 0;
+    //
+}
+
+bool Convert2Ipl(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
+{
+    return 0;
+    //
 }
 
 int main(int argc, char* argv[])
@@ -186,13 +224,48 @@ int main(int argc, char* argv[])
 
         MVCC_INTVALUE stParam;
         memset(&stParam, 0, sizeof(MVCC_INTVALUE));
-        nRet = MV_CC_GetIntValue(handle, "PayLoadSize", &stParam);
+        nRet = MV_CC_GetIntValue(handle, "PayloadSize", &stParam);
         if (MV_OK != nRet)
         {
             printf("Get PayloadSize fail! nRet [0x%x]\n", nRet);
             break;
         }
-        unsigned int nPayLoadSize = stParam.nCurValue;
+        unsigned int nPayloadSize = stParam.nCurValue;
+
+        MV_FRAME_OUT_INFO_EX stImageInfo = { 0 };
+        memset(&stImageInfo, 0, sizeof(MV_FRAME_OUT_INFO_EX));
+        pData = (unsigned char *)malloc(sizeof(unsigned char)* (nPayloadSize));
+        if (NULL == pData)
+        {
+            printf("Alllocate memory failed.\n");
+            break;
+        }
+        memset(pData, 0, sizeof(pData));
+
+        nRet = MV_CC_StartGrabbing(handle);
+        if (MV_OK != nRet)
+        {
+            printf("Start Grabbing fail! nRet [0x%x]\n", nRet);
+            break;
+        }
+
+        nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
+        if (MV_OK == nRet)
+        {
+            printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
+        }
+        else
+        {
+            printf("Get Frame fail! nRet [0x%x]\n", nRet);
+            break;
+        }
+
+        nRet = MV_CC_StopGrabbing(handle);
+        if (MV_OK != nRet)
+        {
+            printf("Stop Grabbing fail! nRet [0x%x]\n", nRet);
+            break;
+        }
 
         nRet = MV_CC_CloseDevice(handle);
         if (MV_OK != nRet)
@@ -200,14 +273,60 @@ int main(int argc, char* argv[])
             printf("Close Device fail! nRet [0x%x]\n", nRet);
             break;
         }
+
+        printf("\n[0] OpenCV_Mat\n");
+        printf("[1] OpenCV_IplImage\n");
+        int nFormat = 0;
+        while (1)
+        {
+            printf("Please Input Format to convert: ");
+
+            if (1 == scanf_s("%d", &nFormat))
+            {
+                if (0 == nFormat || 1 == nFormat)
+                {
+                    break;
+                }
+            }
+            while (getchar() != '\n')
+            {
+                ;
+            }
+        }
+
+        bool bConvertRet = false;
+        if (OpenCV_Mat == nFormat)
+        {
+            bConvertRet = Convert2Mat(&stImageInfo, pData);
+        }
+        else if(OpenCV_IplImage == nFormat)
+        {
+            bConvertRet = Convert2Ipl(&stImageInfo, pData);
+        }
+
+        if (bConvertRet)
+        {
+            printf("OpenCV format convert finished.\n");
+        }
+        else
+        {
+            printf("OpenCV format convert failed.\n");
+        }
     } while (0);
+
+    if (handle)
+    {
+        MV_CC_DestroyHandle(handle);
+        handle == NULL;
+    }
 
     //******************************************************************************
 
-    printf("******************\nEverything is OK\n");
-    scanf_s("ASD");
+    printf("\n******************\nEverything is OK\n***********************\n");
+    
+    //*******************************************************************************
 
-    VideoCapture cap; //
+    /*VideoCapture cap; //
 
     //cap.open("http://admin:K1_a9_a9_i7@192.168.1.157:8000/video?x.mjpeg");
     //cap.open("http://admin:admin@192.168.1.172:8899/video?x.mjpeg");
@@ -252,5 +371,13 @@ int main(int argc, char* argv[])
             break;
         }
     }
+    return 0;*/
+
+    Mat img = imread("Schluse.jpg", 1);
+    if (img.empty()) return -1;
+    namedWindow("Image", WINDOW_AUTOSIZE);
+    imshow("Image", img);
+    waitKey(0);
+    destroyWindow("Image");
     return 0;
 }
