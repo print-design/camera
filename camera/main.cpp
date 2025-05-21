@@ -168,8 +168,6 @@ int main(int argc, char* argv[])
             break;
         }
 
-        bool bConvertRet = false;
-
         if (NULL == pData)
         {
             printf("NULL info or data.\n");
@@ -190,15 +188,6 @@ int main(int argc, char* argv[])
                 destroyWindow("Image");
                 srcImage.release();
             }
-        }
-
-        if (bConvertRet)
-        {
-            printf("OpenCV format convert finished.\n");
-        }
-        else
-        {
-            printf("OpenCV format convert failed.\n");
         }
 
         if (handle)
