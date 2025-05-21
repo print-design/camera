@@ -143,36 +143,43 @@ int main(int argc, char* argv[])
             break;
         }
 
-        nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
-        if (MV_OK == nRet)
-        {
-            printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
-        }
-        else
-        {
-            printf("Get Frame fail! nRet [0x%x]\n", nRet);
-            break;
-        }
+        namedWindow("Image", WINDOW_AUTOSIZE);
 
-        if (NULL == pData)
+        while (1)
         {
-            printf("NULL info or data.\n");
-        }
-        else
-        {
-            Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
-
-            if (NULL == srcImage.data)
+            nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
+            if (MV_OK == nRet)
             {
-                printf("Create Mat failed.\n");
+                printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
             }
             else
             {
-                namedWindow("Image", WINDOW_AUTOSIZE);
-                imshow("Image", srcImage);
-                waitKey(0);
-                destroyWindow("Image");
-                srcImage.release();
+                printf("Get Frame fail! nRet [0x%x]\n", nRet);
+                break;
+            }
+
+            if (NULL == pData)
+            {
+                printf("NULL info or data.\n");
+            }
+            else
+            {
+                Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
+
+                if (NULL == srcImage.data)
+                {
+                    printf("Create Mat failed.\n");
+                }
+                else
+                {
+                    imshow("Image", srcImage);
+                    srcImage.release();
+
+                    if (waitKey(30) == 27)
+                    {
+                        break;
+                    }
+                }
             }
         }
 
