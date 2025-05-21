@@ -1,10 +1,10 @@
 ﻿  main.cpp
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(46,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(206,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(206,20):
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(5,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(56,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(56,20):
       заполнители и их параметры ожидают переменное число аргументов в количестве 1, но было предоставлено 0
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(206,20):
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(56,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(394,16): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(207,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe

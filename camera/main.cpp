@@ -1,45 +1,4 @@
-﻿/*#include <opencv2\opencv.hpp>
-#include <cstdlib>
-
-using namespace cv;
-using namespace std;
-
-int main(int argc, char* argv[])
-{
-	Mat img = imread(argv[1], atoi(argv[2]));
-	if (img.empty()) return -1;
-	namedWindow("Image", WINDOW_AUTOSIZE);
-	imshow("Image", img);
-	waitKey(0);
-	destroyWindow("Image");
-	return 0;
-
-    cv::VideoCapture vcap;
-    cv::Mat image;
-
-    // This works on a D-Link CDS-932L
-    //const std::string videoStreamAddress = "http://<username:password>@<ip_address>/video.cgi?.mjpg";
-    const std::string videoStreamAddress = "http://admin:K1_a9_a9_i7@192.168.1.157:8000/video.cgi?.mjpg";
-
-    //open the video stream and make sure it's opened
-    if (!vcap.open(videoStreamAddress)) {
-        std::cout << "Error opening video stream or file" << std::endl;
-        return -1;
-    }
-
-    for (;;) {
-        if (!vcap.read(image)) {
-            std::cout << "No frame" << std::endl;
-            cv::waitKey();
-        }
-        cv::imshow("Output Window", image);
-        if (cv::waitKey(1) >= 0) break;
-    }
-}
-
-https://programmersought.com/article/92047634591/
-*/
-#include <opencv2/core/core.hpp>
+﻿#include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
@@ -47,12 +6,6 @@ https://programmersought.com/article/92047634591/
 
 using namespace cv;
 using namespace std;
-
-enum CONVERT_TYPE
-{
-    OpenCV_Mat = 0,    // ch:Mat图像格式 | en:Mat format
-    OpenCV_IplImage = 1,    // ch:IplImage图像格式 | en:IplImage format
-};
 
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
@@ -84,109 +37,6 @@ void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
     {
         printf("    Not support.\n\n");
     }
-}
-
-void RGB2BGR(unsigned char* pRgbData, unsigned int nWidth, unsigned int nHeight)
-{
-    if (NULL == pRgbData)
-    {
-        return;
-    }
-
-    // red和blue数据互换
-    for (unsigned int j = 0; j < nHeight; j++)
-    {
-        for (unsigned int i = 0; i < nWidth; i++)
-        {
-            unsigned char red = pRgbData[j * (nWidth * 3) + i * 3];
-            pRgbData[j * (nWidth * 3) + i * 3] = pRgbData[j * (nWidth * 3) + i * 3 + 2];
-            pRgbData[j * (nWidth * 3) + i * 3 + 2] = red;
-        }
-    }
-}
-
-bool Convert2Mat(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
-{
-    if (NULL == pstImageInfo || NULL == pData)
-    {
-        printf("NULL info or data.\n");
-        return false;
-    }
-
-    Mat srcImage;
-
-    // Правильный тип - PixelType_Gvsp_BayerRG8
-    if (PixelType_Gvsp_Mono8 == pstImageInfo->enPixelType)
-    {
-        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC1, pData);
-    }
-    else if (PixelType_Gvsp_RGB8_Packed == pstImageInfo->enPixelType)
-    {
-        RGB2BGR(pData, pstImageInfo->nWidth, pstImageInfo->nHeight);
-        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC3, pData);
-    }
-    else if (PixelType_Gvsp_BayerRG8 == pstImageInfo->enPixelType)
-    {
-        srcImage = Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC1, pData);
-    }
-    else
-    {
-        /* Bayer 格式转换mat格式的方法:
-        1. 使用相机句柄销毁前 调用 MV_CC_ConvertPixelType 将PixelType_Gvsp_BayerRG8 等Bayer格式转换成 PixelType_Gvsp_BGR8_Packed
-        2. 参考上面 将BGR转换为 mat格式
-
-        Method to convert Bayer format to mat format:
-        1. Call MV_CC_ConvertPixelType to convert Bayer formats such as PixelType_Gvsp_BayerRG8 to PixelType_Gvsp_BGR8_Packed before destroying the camera handle
-        2. Refer to the above to convert BGR to mat format
-        */
-
-        printf("Unsupported pixel format\n");
-        return false;
-    }
-
-    if (NULL == srcImage.data)
-    {
-        printf("Create Mat failed.\n");
-        return false;
-    }
-
-    /*try
-    {
-        imwrite("ImageMat.bmp", srcImage);
-    }
-    catch (cv::Exception& ex)
-    {
-        fprintf(stderr, "Exeption in saving mat image: %s\n", ex.what());
-    }*/
-
-    /*
-    
-    
-    Mat img = imread("Schluse.jpg", 1);
-    if (img.empty()) return -1;
-    namedWindow("Image", WINDOW_AUTOSIZE);
-    imshow("Image", img);
-    waitKey(0);
-    destroyWindow("Image");
-    return 0;
-    
-    
-    */
-
-    namedWindow("Image", WINDOW_AUTOSIZE);
-    imshow("Image", srcImage);
-    waitKey(0);
-    destroyWindow("Image");
-
-    srcImage.release();
-
-    return true;
-}
-
-bool Convert2Ipl(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
-{
-    return 0;
-    //
 }
 
 int main(int argc, char* argv[])
@@ -227,36 +77,6 @@ int main(int argc, char* argv[])
         }
 
         unsigned int nIndex = 0;
-        /*while (1)
-        {
-            printf("Please Input camera index(0-%d): ", stDeviceList.nDeviceNum - 1);
-
-            if (1 == scanf_s("%d", &nIndex))
-            {
-                while (getchar() != '\n')
-                {
-                    ;
-                }
-
-                if (nIndex >= 0 && nIndex < stDeviceList.nDeviceNum)
-                {
-                    if (false == MV_CC_IsDeviceAccessible(stDeviceList.pDeviceInfo[nIndex], MV_ACCESS_Exclusive))
-                    {
-                        printf("Can't connect\n");
-                        continue;
-                    }
-
-                    break;
-                }
-            }
-            else
-            {
-                while (getchar() != '\n')
-                {
-                    ;
-                }
-            }
-        }*/
 
         nRet = MV_CC_CreateHandle(&handle, stDeviceList.pDeviceInfo[nIndex]);
         if (MV_OK != nRet)
@@ -308,10 +128,10 @@ int main(int argc, char* argv[])
 
         MV_FRAME_OUT_INFO_EX stImageInfo = { 0 };
         memset(&stImageInfo, 0, sizeof(MV_FRAME_OUT_INFO_EX));
-        pData = (unsigned char *)malloc(sizeof(unsigned char)* (nPayloadSize));
+        pData = (unsigned char*)malloc(sizeof(unsigned char) * (nPayloadSize));
         if (NULL == pData)
         {
-            printf("Alllocate memory failed.\n");
+            printf("Allocate memory failed.\n");
             break;
         }
         memset(pData, 0, sizeof(pData));
@@ -326,7 +146,7 @@ int main(int argc, char* argv[])
         nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
         if (MV_OK == nRet)
         {
-            printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
+            printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
         }
         else
         {
@@ -348,34 +168,28 @@ int main(int argc, char* argv[])
             break;
         }
 
-        printf("\n[0] OpenCV_Mat\n");
-        printf("[1] OpenCV_IplImage\n");
-        int nFormat = 0;
-        /*while (1)
-        {
-            printf("Please Input Format to convert: ");
-
-            if (1 == scanf_s("%d", &nFormat))
-            {
-                if (0 == nFormat || 1 == nFormat)
-                {
-                    break;
-                }
-            }
-            while (getchar() != '\n')
-            {
-                ;
-            }
-        }*/
-
         bool bConvertRet = false;
-        if (OpenCV_Mat == nFormat)
+
+        if (NULL == pData)
         {
-            bConvertRet = Convert2Mat(&stImageInfo, pData);
+            printf("NULL info or data.\n");
         }
-        else if(OpenCV_IplImage == nFormat)
+        else
         {
-            bConvertRet = Convert2Ipl(&stImageInfo, pData);
+            Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
+
+            if (NULL == srcImage.data)
+            {
+                printf("Create Mat failed.\n");
+            }
+            else
+            {
+                namedWindow("Image", WINDOW_AUTOSIZE);
+                imshow("Image", srcImage);
+                waitKey(0);
+                destroyWindow("Image");
+                srcImage.release();
+            }
         }
 
         if (bConvertRet)
@@ -386,72 +200,11 @@ int main(int argc, char* argv[])
         {
             printf("OpenCV format convert failed.\n");
         }
+
+        if (handle)
+        {
+            MV_CC_DestroyHandle(handle);
+            handle == NULL;
+        }
     } while (0);
-
-    if (handle)
-    {
-        MV_CC_DestroyHandle(handle);
-        handle == NULL;
-    }
-
-    //******************************************************************************
-
-    printf("\n******************\nEverything is OK\n***********************\n");
-    
-    //*******************************************************************************
-
-    /*VideoCapture cap; //
-
-    //cap.open("http://admin:K1_a9_a9_i7@192.168.1.157:8000/video?x.mjpeg");
-    //cap.open("http://admin:admin@192.168.1.172:8899/video?x.mjpeg");
-    //cap.open("http://admin:admin@192.168.1.140/video?x.mjpeg");
-    cap.open("cam.mp4");
-    if (!cap.isOpened())  // if not success, exit program
-    {
-        cout << "Cannot open the video cam" << endl;
-        return -1;
-    }
-
-    double dWidth = cap.get(CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
-    double dHeight = cap.get(CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
-
-    cout << "Frame size : " << dWidth << " x " << dHeight << endl;
-
-    namedWindow("MyVideo", WINDOW_AUTOSIZE); //create a window called "MyVideo"
-    namedWindow("MyNegativeVideo", WINDOW_AUTOSIZE);
-
-    while (1)
-    {
-        Mat frame;
-        Mat contours;
-
-        bool bSuccess = cap.read(frame); // read a new frame from video
-
-        if (!bSuccess) //if not success, break loop
-        {
-            cout << "Cannot read a frame from video stream" << endl;
-            break;
-        }
-
-        flip(frame, frame, 1);
-        imshow("MyVideo", frame); //show the frame in "MyVideo" window
-
-        Canny(frame, contours, 500, 1000, 5, true);
-        imshow("MyNegativeVideo", contours);
-
-        if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
-        {
-            cout << "esc key is pressed by user" << endl;
-            break;
-        }
-    }
-    return 0;*/
-
-    /*Mat img = imread("Schluse.jpg", 1);
-    if (img.empty()) return -1;
-    namedWindow("Image", WINDOW_AUTOSIZE);
-    imshow("Image", img);
-    waitKey(0);
-    destroyWindow("Image");*/
-    return 0;
 }
