@@ -154,20 +154,6 @@ int main(int argc, char* argv[])
             break;
         }
 
-        nRet = MV_CC_StopGrabbing(handle);
-        if (MV_OK != nRet)
-        {
-            printf("Stop Grabbing fail! nRet [0x%x]\n", nRet);
-            break;
-        }
-
-        nRet = MV_CC_CloseDevice(handle);
-        if (MV_OK != nRet)
-        {
-            printf("Close Device fail! nRet [0x%x]\n", nRet);
-            break;
-        }
-
         if (NULL == pData)
         {
             printf("NULL info or data.\n");
@@ -188,6 +174,20 @@ int main(int argc, char* argv[])
                 destroyWindow("Image");
                 srcImage.release();
             }
+        }
+
+        nRet = MV_CC_StopGrabbing(handle);
+        if (MV_OK != nRet)
+        {
+            printf("Stop Grabbing fail! nRet [0x%x]\n", nRet);
+            break;
+        }
+
+        nRet = MV_CC_CloseDevice(handle);
+        if (MV_OK != nRet)
+        {
+            printf("Close Device fail! nRet [0x%x]\n", nRet);
+            break;
         }
 
         if (handle)
