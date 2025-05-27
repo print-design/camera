@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
         if (MV_OK != nRet)
         {
             printf("Open Device fail! nRet [0x%x]", nRet);
+            MV_CC_CloseDevice(handle);
             break;
         }
 
@@ -109,12 +110,20 @@ int main(int argc, char* argv[])
             }
         }
 
-        nRet = MV_CC_SetEnumValue(handle, "TriggerMode", 0);
+        nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
         if (MV_OK != nRet)
         {
             printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
             break;
         }
+
+        /*nRet = MV_CC_SetEnumValue(handle, "PixelFormat", PixelType_Gvsp_BayerBG8);
+        if (MV_OK != nRet)
+        {
+            printf("Set Pixel Format fail! nRet [0x%x]\n", nRet);
+            MV_CC_CloseDevice(handle);
+            break;
+        }*/
 
         MVCC_INTVALUE stParam;
         memset(&stParam, 0, sizeof(MVCC_INTVALUE));
@@ -168,7 +177,7 @@ int main(int argc, char* argv[])
 
                 if (NULL == srcImage.data)
                 {
-                    printf("Create Mat failed.\n");
+                    printf("Create Mat failed.\n"); 
                 }
                 else
                 {
