@@ -174,15 +174,17 @@ int main(int argc, char* argv[])
             else
             {
                 Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
+                Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
+                cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
 
-                if (NULL == srcImage.data)
+                if (NULL == rgbImage.data)
                 {
                     printf("Create Mat failed.\n"); 
                 }
                 else
                 {
-                    imshow("Image", srcImage);
-                    srcImage.release();
+                    imshow("Image", rgbImage);
+                    rgbImage.release();
 
                     if (waitKey(30) == 27)
                     {
