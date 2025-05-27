@@ -117,13 +117,13 @@ int main(int argc, char* argv[])
             break;
         }
 
-        /*nRet = MV_CC_SetEnumValue(handle, "PixelFormat", PixelType_Gvsp_BayerBG8);
+        nRet = MV_CC_SetEnumValue(handle, "PixelFormat", PixelType_Gvsp_BayerRG8);
         if (MV_OK != nRet)
         {
             printf("Set Pixel Format fail! nRet [0x%x]\n", nRet);
             MV_CC_CloseDevice(handle);
             break;
-        }*/
+        }
 
         MVCC_INTVALUE stParam;
         memset(&stParam, 0, sizeof(MVCC_INTVALUE));
