@@ -225,7 +225,8 @@ int main(int argc, char* argv[])
                         Point pt1(fragmentX, fragmentY);
                         Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-                        putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                        cv::String text = cv::format("DeltaX = %i, DeltaY = %i", maxLoc.x - fragmentX, maxLoc.y - fragmentY);
+                        putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
 
                         imshow("Image", rgbImage);
                         rgbImage.release();

@@ -6,5 +6,5 @@ C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(56,20): warning C447
       C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(56,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(264,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(259,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
