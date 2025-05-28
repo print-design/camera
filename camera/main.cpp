@@ -183,6 +183,18 @@ int main(int argc, char* argv[])
                 }
                 else 
                 {
+                    /*******************************/
+                    int x = 200;
+                    int y = 200;
+                    int width = 400;
+                    int height = 400;
+                    Point pt1(x, y);
+                    Point pt2(x + width, y + height);
+                    rectangle(rgbImage, pt1, pt2, Scalar(0, 255, 9));
+                    putText(rgbImage, "OK", Point(x, y + height + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+
+                    /********************************/
+
                     imshow("Image", rgbImage);
                     rgbImage.release();
 
@@ -215,50 +227,3 @@ int main(int argc, char* argv[])
         }
     } while (0);
 }
-
-/*int main(int argc, char* argv[])
-{
-    VideoCapture cap; //
-
-    cap.open("cam.mp4");
-    if (!cap.isOpened())  // if not success, exit program
-    {
-        cout << "Cannot open the video cam" << endl;
-        return -1;
-    }
-
-    double dWidth = cap.get(CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
-    double dHeight = cap.get(CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
-
-    cout << "Frame size : " << dWidth << " x " << dHeight << endl;
-
-    namedWindow("MyVideo", WINDOW_AUTOSIZE); //create a window called "MyVideo"
-    namedWindow("MyNegativeVideo", WINDOW_AUTOSIZE);
-
-    while (1)
-    {
-        Mat frame;
-        Mat contours;
-
-        bool bSuccess = cap.read(frame); // read a new frame from video
-
-        if (!bSuccess) //if not success, break loop
-        {
-            cout << "Cannot read a frame from video stream" << endl;
-            break;
-        }
-
-        flip(frame, frame, 1);
-        imshow("MyVideo", frame); //show the frame in "MyVideo" window
-
-        Canny(frame, contours, 500, 1000, 5, true);
-        imshow("MyNegativeVideo", contours);
-
-        if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
-        {
-            cout << "esc key is pressed by user" << endl;
-            break;
-        }
-    }
-    return 0;
-}*/
