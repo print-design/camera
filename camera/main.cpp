@@ -152,78 +152,111 @@ int main(int argc, char* argv[])
             break;
         }
 
-        namedWindow("Image", WINDOW_AUTOSIZE);
+        int fragmentX = 200;
+        int fragmentY = 200;
+        int fragmentWidth = 400;
+        int fragmentHeight = 400;
+        Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
+        bool hasFragment = false;
+        Mat result;
+        int method = TM_CCOEFF_NORMED;
 
-        while (1)
+        nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
+        if (MV_OK == nRet)
         {
-            nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
-            if (MV_OK == nRet)
-            {
-                printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
-            }
-            else
-            {
-                printf("Get Frame fail! nRet [0x%x]\n", nRet);
-                break;
-            }
+            printf("Get First Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
+        }
+        else
+        {
+            printf("Get First Frame fail! nRet [0x%x]\n", nRet);
+        }
 
-            if (NULL == pData)
-            {
-                printf("NULL info or data.\n");
-            }
-            else
-            {
-                Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
-                Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
-                cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
+        if (NULL == pData)
+        {
+            printf("NULL info or data.\n");
+        }
+        else
+        {
+            namedWindow("Image", WINDOW_AUTOSIZE);
 
-                if (NULL == rgbImage.data)
+            while (1)
+            {
+                nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
+                if (MV_OK == nRet)
                 {
-                    printf("Create Mat failed.\n"); 
+                    printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
                 }
-                else 
+                else
                 {
-                    /*******************************/
-                    int x = 200;
-                    int y = 200;
-                    int width = 400;
-                    int height = 400;
-                    Point pt1(x, y);
-                    Point pt2(x + width, y + height);
-                    rectangle(rgbImage, pt1, pt2, Scalar(0, 255, 9));
-                    putText(rgbImage, "OK", Point(x, y + height + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                    printf("Get Frame fail! nRet [0x%x]\n", nRet);
+                    break;
+                }
 
-                    /********************************/
+                if (NULL == pData)
+                {
+                    printf("NULL info or data.\n");
+                }
+                else
+                {
+                    Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
+                    Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
+                    cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
 
-                    imshow("Image", rgbImage);
-                    rgbImage.release();
-
-                    if (waitKey(30) == 27)
+                    if (!hasFragment)
                     {
-                        break;
+                        fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
+                        result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
+                        hasFragment = true;
+                    }
+
+                    if (NULL == rgbImage.data)
+                    {
+                        printf("Create Mat failed.\n");
+                    }
+                    else
+                    {
+                        matchTemplate(rgbImage, fragment, result, method);
+                        double minVal;
+                        double maxVal;
+                        Point minLoc;
+                        Point maxLoc;
+                        Point matchLoc;
+                        minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+                        Point pt1(fragmentX, fragmentY);
+                        Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
+                        rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
+                        putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+
+                        imshow("Image", rgbImage);
+                        rgbImage.release();
+
+                        if (waitKey(30) == 27)
+                        {
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        nRet = MV_CC_StopGrabbing(handle);
-        if (MV_OK != nRet)
-        {
-            printf("Stop Grabbing fail! nRet [0x%x]\n", nRet);
-            break;
-        }
+            nRet = MV_CC_StopGrabbing(handle);
+            if (MV_OK != nRet)
+            {
+                printf("Stop Grabbing fail! nRet [0x%x]\n", nRet);
+                break;
+            }
 
-        nRet = MV_CC_CloseDevice(handle);
-        if (MV_OK != nRet)
-        {
-            printf("Close Device fail! nRet [0x%x]\n", nRet);
-            break;
-        }
+            nRet = MV_CC_CloseDevice(handle);
+            if (MV_OK != nRet)
+            {
+                printf("Close Device fail! nRet [0x%x]\n", nRet);
+                break;
+            }
 
-        if (handle)
-        {
-            MV_CC_DestroyHandle(handle);
-            handle == NULL;
+            if (handle)
+            {
+                MV_CC_DestroyHandle(handle);
+                handle == NULL;
+            }
         }
     } while (0);
 }
