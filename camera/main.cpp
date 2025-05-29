@@ -225,15 +225,18 @@ int main(int argc, char* argv[])
                         Point matchLoc;
                         minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
 
+                        int DeltaX = maxLoc.x - fragmentX;
+                        int DeltaY = maxLoc.y - fragmentY;
+
                         Point pt1(fragmentX, fragmentY);
                         Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
 
                         if (norm(rgbImage, original) < 30000)
                         {
-                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", maxLoc.x - fragmentX, maxLoc.y - fragmentY);
+                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
                             putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
-                         }
+                        }
                         else
                         {
                             putText(rgbImage, "Error", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
