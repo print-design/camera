@@ -157,6 +157,7 @@ int main(int argc, char* argv[])
         int fragmentWidth = 400;
         int fragmentHeight = 400;
         Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
+        Mat original;
         bool hasFragment = false;
         Mat result;
         int method = TM_CCOEFF_NORMED;
@@ -202,19 +203,20 @@ int main(int argc, char* argv[])
                     Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
                     cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
 
-                    if (!hasFragment)
-                    {
-                        fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
-                        result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
-                        hasFragment = true;
-                    }
-
                     if (NULL == rgbImage.data)
                     {
                         printf("Create Mat failed.\n");
                     }
                     else
                     {
+                        if (!hasFragment)
+                        {
+                            rgbImage.copyTo(original);
+                            fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
+                            result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
+                            hasFragment = true;
+                        }
+
                         matchTemplate(rgbImage, fragment, result, method);
                         double minVal;
                         double maxVal;
@@ -222,11 +224,22 @@ int main(int argc, char* argv[])
                         Point maxLoc;
                         Point matchLoc;
                         minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+
                         Point pt1(fragmentX, fragmentY);
                         Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-                        cv::String text = cv::format("DeltaX = %i, DeltaY = %i", maxLoc.x - fragmentX, maxLoc.y - fragmentY);
-                        putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+
+                        if (norm(rgbImage, original) < 20000)
+                        {
+                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", maxLoc.x - fragmentX, maxLoc.y - fragmentY);
+                            putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                         }
+                        else
+                        {
+                            putText(rgbImage, "Error", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        }
+
+                        double nm = norm(rgbImage, original);
 
                         imshow("Image", rgbImage);
                         rgbImage.release();
