@@ -232,7 +232,56 @@ int main(int argc, char* argv[])
                         Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
 
-                        if (norm(rgbImage, original) < 30000)
+                        Mat currentCrop;
+                        Mat originalCrop;
+
+                        if (DeltaX < 0 && DeltaY < 0)
+                        {
+                            currentCrop = rgbImage(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if (DeltaX < 0 && DeltaY > 0)
+                        {
+                            currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if(DeltaX < 0 && DeltaY == 0)
+                        {
+                            currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
+                            originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
+                        }
+                        else if (DeltaX > 0 && DeltaY < 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if (DeltaX > 0 && DeltaY > 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if (DeltaX > 0 && DeltaY == 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
+                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
+                        }
+                        else if (DeltaX == 0 && DeltaY < 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if (DeltaX == 0 && DeltaY > 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
+                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
+                        }
+                        else if (DeltaX == 0 && DeltaY == 0)
+                        {
+                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                        }
+
+                        if (norm(currentCrop, originalCrop) < 30000)
                         {
                             cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
                             putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
