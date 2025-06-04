@@ -235,60 +235,76 @@ int main(int argc, char* argv[])
                         Mat currentCrop;
                         Mat originalCrop;
 
-                        if (DeltaX < 0 && DeltaY < 0)
+                        try
                         {
-                            currentCrop = rgbImage(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if (DeltaX < 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if(DeltaX < 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY < 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - DeltaX, stImageInfo.nHeight)).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY < 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - DeltaY)).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
-                        }
+                            if (DeltaX < 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX < 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX < 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                            }
 
-                        if (norm(currentCrop, originalCrop) < 30000)
-                        {
-                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                            putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            if (norm(currentCrop, originalCrop) < 30000)
+                            {
+                                cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                                putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            }
+                            else
+                            {
+                                putText(rgbImage, "Error", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                            }
+
+                            cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
+                            putText(rgbImage, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            cv::String currentSize = cv::format("X2 = %i, Y2 = %i", currentCrop.cols, currentCrop.rows);
+                            putText(rgbImage, currentSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                         }
-                        else
+                        catch (std::exception stde)
                         {
-                            putText(rgbImage, "Error", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                            putText(rgbImage, cv::format("std exception: %s", stde.what()), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        }
+                        catch (cv::Exception cve)
+                        {
+                            putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                         }
 
                         double nm = norm(rgbImage, original);
