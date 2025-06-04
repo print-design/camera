@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
     int nRet = MV_OK;
     void* handle = NULL;
     unsigned char* pData = NULL;
+    bool showOriginal = false;
 
     do
     {
@@ -179,6 +180,7 @@ int main(int argc, char* argv[])
         else
         {
             namedWindow("Image", WINDOW_AUTOSIZE);
+            namedWindow("Compare", WINDOW_AUTOSIZE);
 
             while (1)
             {
@@ -307,10 +309,20 @@ int main(int argc, char* argv[])
                             putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                         }
 
-                        double nm = norm(rgbImage, original);
-
                         imshow("Image", rgbImage);
                         rgbImage.release();
+
+                        if (showOriginal)
+                        {
+                            imshow("Compare", originalCrop);
+                            originalCrop.release();
+                        }
+                        else
+                        {
+                            imshow("Compare", currentCrop);
+                            currentCrop.release();
+                        }
+                        showOriginal = !showOriginal;
 
                         if (waitKey(30) == 27)
                         {
