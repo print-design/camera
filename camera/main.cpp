@@ -60,6 +60,8 @@ int main(int argc, char* argv[])
         }
         else
         {
+            cout << nDevices << " DEVICES: " << endl;
+
             PRAWINPUTDEVICELIST pRawInputDeviceList;
 
             pRawInputDeviceList = new RAWINPUTDEVICELIST[sizeof(RAWINPUTDEVICELIST) * nDevices];
@@ -90,7 +92,7 @@ int main(int argc, char* argv[])
                 if (nResult < 0)
                 {
                     printf("ERR: Unable to get Device Name character count... Moving to next device.\n");
-                    continue;
+                    //continue;
                 }
 
                 WCHAR* wcDeviceName = new WCHAR[nBufferSize + 1];
@@ -98,7 +100,7 @@ int main(int argc, char* argv[])
                 if (wcDeviceName == NULL)
                 {
                     printf("ERR: Unable to allocate memory for Device Name... Moving to next device.");
-                    continue;
+                    //continue;
                 }
 
                 nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, wcDeviceName, &nBufferSize);
@@ -107,7 +109,7 @@ int main(int argc, char* argv[])
                 {
                     printf("ERR: Unable to get Device Name... MOving to next device.\n");
                     delete[] wcDeviceName;
-                    continue;
+                    //continue;
                 }
 
                 RID_DEVICE_INFO rdiDeviceInfo;
@@ -119,12 +121,12 @@ int main(int argc, char* argv[])
                 if (nResult < 0)
                 {
                     printf("ERR: Unable to read Device Info... Move to next device.\n");
-                    continue;
+                    //continue;
                 }
 
                 if (rdiDeviceInfo.dwType == RIM_TYPEMOUSE)
                 {
-                    printf("Displaying device [%i] information. (MOUSE)\n", i);
+                    cout << endl << "Displaying device " << i + 1 << " information. (MOUSE)" << endl;
                     wcout << L"Device Name: " << wcDeviceName << endl;
                     cout << "Mouse ID: " << rdiDeviceInfo.mouse.dwId << endl;
                     cout << "Mouse buttons: " << rdiDeviceInfo.mouse.dwNumberOfButtons << endl;
