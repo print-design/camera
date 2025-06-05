@@ -256,17 +256,17 @@ int main(int argc, char* argv[])
                             }
                             else if (DeltaX > 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                                originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX > 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX > 0 && DeltaY == 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                             }
                             else if (DeltaX == 0 && DeltaY < 0)
@@ -285,10 +285,12 @@ int main(int argc, char* argv[])
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                             }
 
+                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                            putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+
                             if (norm(currentCrop, originalCrop) < 30000)
                             {
-                                cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                                putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                                putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                             }
                             else
                             {
@@ -296,9 +298,9 @@ int main(int argc, char* argv[])
                             }
 
                             cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
-                            putText(rgbImage, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            putText(rgbImage, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                             cv::String currentSize = cv::format("X2 = %i, Y2 = %i", currentCrop.cols, currentCrop.rows);
-                            putText(rgbImage, currentSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            putText(rgbImage, currentSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 200), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                         }
                         catch (std::exception stde)
                         {

@@ -6,6 +6,6 @@ C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(57,20): warning C447
       C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(57,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(307,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 303
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(352,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(309,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 305
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(354,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
