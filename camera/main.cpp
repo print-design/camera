@@ -287,7 +287,7 @@ int main(int argc, char* argv[])
                             cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
                             putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
 
-                            if (norm(currentCrop, originalCrop) < 30000)
+                            if (norm(currentCrop, originalCrop) < 50000)
                             {
                                 putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                             }
