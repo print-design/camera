@@ -8,4 +8,6 @@ C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(57,20): warning C447
   
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(308,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 304
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(353,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+  tty.cpp
+  Создание кода...
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
