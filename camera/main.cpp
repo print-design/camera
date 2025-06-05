@@ -155,8 +155,8 @@ int main(int argc, char* argv[])
 
         int fragmentX = 200;
         int fragmentY = 200;
-        int fragmentWidth = 400;
-        int fragmentHeight = 400;
+        int fragmentWidth = 600;
+        int fragmentHeight = 600;
         Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
         Mat original;
         bool hasFragment = false;
@@ -241,18 +241,18 @@ int main(int argc, char* argv[])
                         {
                             if (DeltaX < 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                                originalCrop = original(Rect(-DeltaX, -DeltaY, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX < 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                                originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX < 0 && DeltaY == 0)
                             {
-                                currentCrop = rgbImage(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
-                                originalCrop = original(Rect(-DeltaX, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                             }
                             else if (DeltaX > 0 && DeltaY < 0)
                             {
