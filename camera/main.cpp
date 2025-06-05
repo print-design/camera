@@ -230,10 +230,6 @@ int main(int argc, char* argv[])
                         int DeltaX = maxLoc.x - fragmentX;
                         int DeltaY = maxLoc.y - fragmentY;
 
-                        Point pt1(fragmentX, fragmentY);
-                        Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
-                        rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-
                         Mat currentCrop;
                         Mat originalCrop;
 
@@ -271,12 +267,12 @@ int main(int argc, char* argv[])
                             }
                             else if (DeltaX == 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
-                                originalCrop = original(Rect(0, -DeltaY, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX == 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX == 0 && DeltaY == 0)
@@ -285,6 +281,9 @@ int main(int argc, char* argv[])
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                             }
 
+                            Point pt1(fragmentX, fragmentY);
+                            Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
+                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
                             cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
                             putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
 
