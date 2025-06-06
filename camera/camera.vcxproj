@@ -130,11 +130,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="comportslister.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tty.cpp" />
     <ClCompile Include="usblister.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="comportslister.h" />
     <ClInclude Include="tty.h" />
     <ClInclude Include="usblister.h" />
   </ItemGroup>

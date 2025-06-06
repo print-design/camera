@@ -4,6 +4,7 @@
 #include <iostream>
 #include "MvCameraControl.h";
 #include "usblister.h";
+#include "comportslister.h";
 
 using namespace cv;
 using namespace std;
@@ -51,6 +52,9 @@ int main(int argc, char* argv[])
     {
         // USB-порты
         List();
+
+        // COM-порты
+        ListComPorts();
 
         // Камеры
         MV_CC_DEVICE_INFO_LIST stDeviceList;

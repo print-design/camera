@@ -123,8 +123,6 @@ void List()
 
         delete[] pRawInputDeviceList;
 
-        cout << endl << "Finished." << endl;
-
-        printf("\n\n\n");
+        cout << endl << "Finished." << endl << endl;
     }
 }
