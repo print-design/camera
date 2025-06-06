@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     do
     {
         // USB-порты
-        List();
+        //List();
 
         // COM-порты
         ListComPorts();
