@@ -2,6 +2,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <Windows.h>
+#include <SetupAPI.h>
+#include <devguid.h>
 #include "MvCameraControl.h";
 #include "usblister.h";
 #include "comportslister.h";
@@ -41,6 +44,9 @@ void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
     }
 }
 
+//DEFINE_GUID(GUID_DEVCLASS_PORTS, 0x4d36e978, 0xe325, 0x11ce, 0xbf, 0xc1, \
+    0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18);
+
 int main(int argc, char* argv[])
 {
     int nRet = MV_OK;
@@ -54,7 +60,97 @@ int main(int argc, char* argv[])
         //List();
 
         // COM-порты
-        ListComPorts();
+        std::cout << "Available COM Ports:" << std::endl;
+
+        auto ports = listSerialPorts();
+
+        if (ports.empty())
+        {
+            std::cout << "No COM ports found." << std::endl;
+        }
+        else
+        {
+            for (const auto& port : ports)
+            {
+                std::cout << " - " << port << std::endl;
+            }
+        }
+
+        std::cout << "Finished." << std::endl << std::endl;
+
+        // Порты и устройства
+        HDEVINFO hDevInfo;
+        SP_DEVINFO_DATA DeviceInfoData;
+        SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
+        SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
+
+        hDevInfo = SetupDiGetClassDevsA(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
+
+        if (hDevInfo == INVALID_HANDLE_VALUE)
+        {
+            cout << "No COM ports found." << endl;
+        }
+
+        DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+        DeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+        DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+        for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
+        {
+            //DWORD dwData;
+            //char* buffer = new char[100];
+
+            //DWORD buffersize = 0;
+
+            char buffer[256];
+            DWORD bufferSize = sizeof(buffer);
+
+            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)buffer, bufferSize, &bufferSize))
+            {
+                cout << "*-- " << buffer << endl;
+            }
+
+            /*while (!SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, &dwData, (PBYTE)buffer, buffersize, &buffersize))
+            {
+                if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+                {
+                    if (buffer) delete[] buffer;
+                    buffer = new char[buffersize];
+                }
+                else
+                {
+                    cout << " *-- " << buffer << endl;
+                    break;
+                }
+            }
+
+            if (SetupDiEnumDeviceInterfaces(hDevInfo, &DeviceInfoData, &GUID_DEVCLASS_PORTS, i, &DeviceInterfaceData))
+            {
+                DWORD requiredSize = 0;
+                SetupDiGetDeviceInterfaceDetail(hDevInfo, &DeviceInterfaceData, NULL, 0, &requiredSize, NULL);
+
+                if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+                {
+                    SetupDiGetDeviceInterfaceDetail(hDevInfo, &DeviceInterfaceData, &DeviceInterfaceDetailData, requiredSize, NULL, &DeviceInfoData);
+                    requiredSize = 0;
+                    SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, NULL, 0, &requiredSize);
+                    CHAR* pBuffer = new CHAR[requiredSize + 1];
+                    SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)pBuffer, requiredSize, NULL);
+                    std::cout << pBuffer << std::endl;
+                    delete pBuffer;
+                }
+                else
+                {
+                    cout << GetLastError() << endl;
+                }
+
+                if (buffer) delete[] buffer;
+            }*/
+        }
+
+        SetupDiDestroyDeviceInfoList(hDevInfo);
+
+        std::cout << "Finished." << std::endl << std::endl;
 
         // Камеры
         MV_CC_DEVICE_INFO_LIST stDeviceList;

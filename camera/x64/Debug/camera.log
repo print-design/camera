@@ -1,13 +1,14 @@
 ﻿  main.cpp
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(5,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(6,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(7,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(66,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(66,20):
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(8,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(9,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(48,1): warning C4010: однострочный комментарий содержит знак объединения строк
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(162,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(162,20):
       заполнители и их параметры ожидают переменное число аргументов в количестве 1, но было предоставлено 0
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(66,20):
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(162,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(317,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 313
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(362,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(413,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 409
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(458,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
