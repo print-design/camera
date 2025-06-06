@@ -1,11 +1,12 @@
 ﻿  main.cpp
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(5,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(6,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(182,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(182,20):
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(62,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(62,20):
       заполнители и их параметры ожидают переменное число аргументов в количестве 1, но было предоставлено 0
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(182,20):
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(62,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(433,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 429
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(478,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(313,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 309
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(358,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe

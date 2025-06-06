@@ -132,9 +132,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tty.cpp" />
+    <ClCompile Include="usblister.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tty.h" />
+    <ClInclude Include="usblister.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

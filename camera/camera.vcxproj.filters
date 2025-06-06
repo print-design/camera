@@ -21,9 +21,15 @@
     <ClCompile Include="tty.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="usblister.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tty.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="usblister.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
