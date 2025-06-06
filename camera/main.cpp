@@ -54,35 +54,20 @@ int main(int argc, char* argv[])
     unsigned char* pData = NULL;
     bool showOriginal = false;
 
+    const char* target_devdesc = "USB-SERIAL CH340";
+    const char* target_mfg = "wch.cn";
+    const char* target_enumerator_name = "USB";
+
     do
     {
-        // USB-порты
-        //List();
-
         // COM-порты
-        std::cout << "Available COM Ports:" << std::endl;
-
-        auto ports = listSerialPorts();
-
-        if (ports.empty())
-        {
-            std::cout << "No COM ports found." << std::endl;
-        }
-        else
-        {
-            for (const auto& port : ports)
-            {
-                std::cout << " - " << port << std::endl;
-            }
-        }
-
-        std::cout << "Finished." << std::endl << std::endl;
-
-        // Порты и устройства
         HDEVINFO hDevInfo;
         SP_DEVINFO_DATA DeviceInfoData;
         SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
         SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
+        char dev_name[1024];
+        char port_number[1024];
+        WCHAR szBuffer[400];
 
         hDevInfo = SetupDiGetClassDevsA(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
 
@@ -95,57 +80,24 @@ int main(int argc, char* argv[])
         DeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
         DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
+        cout << "Friendly names: " << endl;
+
         for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
         {
-            //DWORD dwData;
-            //char* buffer = new char[100];
-
-            //DWORD buffersize = 0;
-
-            char buffer[256];
-            DWORD bufferSize = sizeof(buffer);
-
-            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)buffer, bufferSize, &bufferSize))
+            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
             {
-                cout << "*-- " << buffer << endl;
+                cout << " -- " << dev_name << endl;
             }
+        }
 
-            /*while (!SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, &dwData, (PBYTE)buffer, buffersize, &buffersize))
+        cout << "Device desc: " << endl;
+
+        for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
+        {
+            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
             {
-                if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-                {
-                    if (buffer) delete[] buffer;
-                    buffer = new char[buffersize];
-                }
-                else
-                {
-                    cout << " *-- " << buffer << endl;
-                    break;
-                }
+                cout << " -- " << dev_name << endl;
             }
-
-            if (SetupDiEnumDeviceInterfaces(hDevInfo, &DeviceInfoData, &GUID_DEVCLASS_PORTS, i, &DeviceInterfaceData))
-            {
-                DWORD requiredSize = 0;
-                SetupDiGetDeviceInterfaceDetail(hDevInfo, &DeviceInterfaceData, NULL, 0, &requiredSize, NULL);
-
-                if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-                {
-                    SetupDiGetDeviceInterfaceDetail(hDevInfo, &DeviceInterfaceData, &DeviceInterfaceDetailData, requiredSize, NULL, &DeviceInfoData);
-                    requiredSize = 0;
-                    SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, NULL, 0, &requiredSize);
-                    CHAR* pBuffer = new CHAR[requiredSize + 1];
-                    SetupDiGetDeviceRegistryProperty(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)pBuffer, requiredSize, NULL);
-                    std::cout << pBuffer << std::endl;
-                    delete pBuffer;
-                }
-                else
-                {
-                    cout << GetLastError() << endl;
-                }
-
-                if (buffer) delete[] buffer;
-            }*/
         }
 
         SetupDiDestroyDeviceInfoList(hDevInfo);
