@@ -56,8 +56,7 @@ int main(int argc, char* argv[])
     bool showOriginal = false;
 
     string target_devdesc = "USB-SERIAL CH340";
-    const char* target_mfg = "wch.cn";
-    const char* target_enumerator_name = "USB";
+    string port_number = "";
 
     do
     {
@@ -69,7 +68,7 @@ int main(int argc, char* argv[])
         char dev_name[1024];
         char dev_desc[1024];
         WCHAR szBuffer[400];
-        string port_number = "";
+        
         const regex com_regex(R"(COM\d+)");
         smatch m;
 
