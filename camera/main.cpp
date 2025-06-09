@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <thread>
 #include <Windows.h>
 #include <SetupAPI.h>
 #include <devguid.h>
@@ -45,7 +46,46 @@ void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
     }
 }
 
-void ObserveImage()
+void Signal(string port_name)
+{
+    HANDLE port;
+    port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    if (port == INVALID_HANDLE_VALUE)
+    {
+        cout << "Error on opening COM-port." << endl;
+        ExitProcess(1);
+    }
+    else
+    {
+        cout << "COM-port opened." << endl;
+
+        short keyState = 0;
+        while (keyState >= 0)
+        {
+            DWORD dwBytesWritten;
+            int buffer[4];
+            int* s;
+            buffer[0] = 1;
+            buffer[1] = 2;
+            buffer[2] = 3;
+            buffer[3] = 4;
+            s = &buffer[0];
+            WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
+
+            //cout << s << endl;
+
+            /*if (waitKey(30) == 27)
+            {
+                break;
+            }*/
+
+            keyState = GetAsyncKeyState(VK_ESCAPE);
+        }
+    }
+    CloseHandle(port);
+}
+
+void ObserveImage(string port_name)
 {
     int nRet = MV_OK;
     void* handle = NULL;
@@ -59,7 +99,7 @@ void ObserveImage()
     nRet = MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, &stDeviceList);
     if (MV_OK != nRet)
     {
-        printf("Enum Devices fail! nRet [0x%x]/n");
+        printf("Enum Devices fail! nRet [0x%x]\n", nRet);
         return;
     }
 
@@ -78,7 +118,7 @@ void ObserveImage()
     }
     else
     {
-        printf("Find No Devices!");
+        printf("Find No Devices!\n");
         return;
     }
 
@@ -209,6 +249,7 @@ void ObserveImage()
                 Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
                 Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
                 cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
+                bool brak = false;
 
                 if (NULL == rgbImage.data)
                 {
@@ -294,10 +335,12 @@ void ObserveImage()
 
                         if (norm(currentCrop, originalCrop) < 50000)
                         {
+                            brak = false;
                             putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                         }
                         else
                         {
+                            brak = true;
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                         }
 
@@ -329,6 +372,12 @@ void ObserveImage()
                         currentCrop.release();
                     }
                     showOriginal = !showOriginal;
+
+                    if (brak)
+                    {
+                        // Сигнал
+                        Signal(port_name);
+                    }
 
                     if (waitKey(30) == 27)
                     {
@@ -434,7 +483,7 @@ int main(int argc, char* argv[])
         else
         {
             cout << "Port name: " << port_name << endl;
-            ObserveImage();
+            ObserveImage(port_name);
 
             // Пробуем послать туда сингал.
             /*HANDLE port;
