@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <SetupAPI.h>
 #include <devguid.h>
+#include <regex>
 #include "MvCameraControl.h";
 #include "usblister.h";
 #include "comportslister.h";
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
     unsigned char* pData = NULL;
     bool showOriginal = false;
 
-    const char* target_devdesc = "USB-SERIAL CH340";
+    string target_devdesc = "USB-SERIAL CH340";
     const char* target_mfg = "wch.cn";
     const char* target_enumerator_name = "USB";
 
@@ -66,8 +67,11 @@ int main(int argc, char* argv[])
         SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
         SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
         char dev_name[1024];
-        char port_number[1024];
+        char dev_desc[1024];
         WCHAR szBuffer[400];
+        string port_number = "";
+        const regex com_regex(R"(COM\d+)");
+        smatch m;
 
         hDevInfo = SetupDiGetClassDevsA(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
 
@@ -94,11 +98,27 @@ int main(int argc, char* argv[])
 
         for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
         {
-            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
+            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, NULL, (UCHAR*)dev_desc, sizeof(dev_desc), NULL))
             {
-                cout << " -- " << dev_name << endl;
+                cout << " -- " << dev_desc << endl;
+
+                if ((new string(dev_desc))->compare(target_devdesc) == 0 
+                    && SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
+                {
+                    //cout << endl << dev_name << endl;
+
+                    string str_dev_name(dev_name);
+
+                    if (regex_search(str_dev_name, m, com_regex) && m.length() > 0)
+                    {
+                        port_number = m[0];
+                    }
+                }
             }
         }
+
+        cout << "Port mumber: " << endl;
+        cout << " -- " << port_number << endl;
 
         SetupDiDestroyDeviceInfoList(hDevInfo);
 
