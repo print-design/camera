@@ -477,11 +477,10 @@ int main(int argc, char* argv[])
     }*/
 
     // Если всё в порядке, то запускаем просмотр
-    ObserveImage(port_name, handle);
 
-    //thread threadObserveImage = thread(ObserveImage, port_name, handle);
+    thread threadObserveImage = thread(ObserveImage, port_name, handle);
     thread threadSignal = thread(Signal, port_name);
-    //threadObserveImage.join();
+    threadObserveImage.join();
     threadSignal.join();
 
     return 1;
