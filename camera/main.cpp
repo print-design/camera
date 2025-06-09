@@ -48,7 +48,12 @@ void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 
 void Signal(string port_name)
 {
-    HANDLE port;
+    while (true)
+    {
+        cout << "brak" << endl;
+    }
+
+    /*HANDLE port;
     port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
     if (port == INVALID_HANDLE_VALUE)
     {
@@ -59,8 +64,8 @@ void Signal(string port_name)
     {
         cout << "COM-port opened." << endl;
 
-        int counter = 0;
-        while (++counter < 500)
+        short keyState = 0;
+        while (keyState >= 0)
         {
             DWORD dwBytesWritten;
             int buffer[4];
@@ -71,9 +76,11 @@ void Signal(string port_name)
             buffer[3] = 4;
             s = &buffer[0];
             WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
+
+            keyState = GetAsyncKeyState(VK_ESCAPE);
         }
     }
-    CloseHandle(port);
+    CloseHandle(port);*/
 }
 
 void ObserveImage(string port_name, void* handle)
@@ -250,7 +257,6 @@ void ObserveImage(string port_name, void* handle)
                         else
                         {
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                            Signal(port_name);
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
@@ -281,12 +287,6 @@ void ObserveImage(string port_name, void* handle)
                         currentCrop.release();
                     }
                     showOriginal = !showOriginal;
-
-                    // Если брак, то сигнал.
-                    //if (brak)
-                    //{
-                    //    thread(Signal, port_name);
-                    //}
 
                     if (waitKey(30) == 27)
                     {
@@ -479,8 +479,10 @@ int main(int argc, char* argv[])
     // Если всё в порядке, то запускаем просмотр
     ObserveImage(port_name, handle);
 
-    thread threadObserveImage = thread(ObserveImage, port_name, handle);
-    threadObserveImage.join();
+    //thread threadObserveImage = thread(ObserveImage, port_name, handle);
+    thread threadSignal = thread(Signal, port_name);
+    //threadObserveImage.join();
+    threadSignal.join();
 
     return 1;
 }
