@@ -59,8 +59,8 @@ void Signal(string port_name)
     {
         cout << "COM-port opened." << endl;
 
-        short keyState = 0;
-        while (keyState >= 0)
+        int counter = 0;
+        while (++counter < 500)
         {
             DWORD dwBytesWritten;
             int buffer[4];
@@ -71,15 +71,6 @@ void Signal(string port_name)
             buffer[3] = 4;
             s = &buffer[0];
             WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
-
-            //cout << s << endl;
-
-            /*if (waitKey(30) == 27)
-            {
-                break;
-            }*/
-
-            keyState = GetAsyncKeyState(VK_ESCAPE);
         }
     }
     CloseHandle(port);
@@ -249,7 +240,6 @@ void ObserveImage(string port_name)
                 Mat srcImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC1, pData);
                 Mat rgbImage = Mat(stImageInfo.nHeight, stImageInfo.nWidth, CV_8UC3);
                 cvtColor(srcImage, rgbImage, COLOR_BayerRG2RGB);
-                bool brak = false;
 
                 if (NULL == rgbImage.data)
                 {
@@ -335,13 +325,12 @@ void ObserveImage(string port_name)
 
                         if (norm(currentCrop, originalCrop) < 50000)
                         {
-                            brak = false;
                             putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                         }
                         else
                         {
-                            brak = true;
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                            Signal(port_name);
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
@@ -373,11 +362,11 @@ void ObserveImage(string port_name)
                     }
                     showOriginal = !showOriginal;
 
-                    if (brak)
-                    {
-                        // Сигнал
-                        Signal(port_name);
-                    }
+                    // Если брак, то сигнал.
+                    //if (brak)
+                    //{
+                    //    thread(Signal, port_name);
+                    //}
 
                     if (waitKey(30) == 27)
                     {
@@ -417,110 +406,107 @@ int main(int argc, char* argv[])
     string target_enumerator_name = "USB";
     string port_name = "";
 
-    do
+    // COM-порты
+    HDEVINFO hDevInfo;
+    SP_DEVINFO_DATA DeviceInfoData;
+    SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
+    SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
+    char dev_name[1024];
+    char dev_desc[1024];
+    char dev_mfg[1024];
+    WCHAR szBuffer[400];
+
+    const regex com_regex(R"(COM\d+)");
+    smatch m;
+
+    hDevInfo = SetupDiGetClassDevsA(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
+
+    if (hDevInfo == INVALID_HANDLE_VALUE)
     {
-        // COM-порты
-        HDEVINFO hDevInfo;
-        SP_DEVINFO_DATA DeviceInfoData;
-        SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
-        SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
-        char dev_name[1024];
-        char dev_desc[1024];
-        char dev_mfg[1024];
-        WCHAR szBuffer[400];
-        
-        const regex com_regex(R"(COM\d+)");
-        smatch m;
+        cout << "No COM ports found." << endl;
+    }
 
-        hDevInfo = SetupDiGetClassDevsA(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
+    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+    DeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+    DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-        if (hDevInfo == INVALID_HANDLE_VALUE)
+    cout << "Device friendly names: " << endl;
+
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
+    {
+        if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
         {
-            cout << "No COM ports found." << endl;
+            cout << " -- " << dev_name << endl;
         }
+    }
 
-        DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-        DeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-        DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+    cout << "Device descriptions: " << endl;
 
-        cout << "Device friendly names: " << endl;
-
-        for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
+    {
+        if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, NULL, (UCHAR*)dev_desc, sizeof(dev_desc), NULL))
         {
-            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
+            cout << " -- " << dev_desc << endl;
+
+            if (((new string(dev_desc))->compare(target_devdesc) == 0 || ((new string(dev_desc))->compare(target_devdesc1) == 0))
+                && SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
             {
-                cout << " -- " << dev_name << endl;
-            }
-        }
+                string str_dev_name(dev_name);
 
-        cout << "Device descriptions: " << endl;
-
-        for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
-        {
-            if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_DEVICEDESC, NULL, (UCHAR*)dev_desc, sizeof(dev_desc), NULL))
-            {
-                cout << " -- " << dev_desc << endl;
-
-                if (((new string(dev_desc))->compare(target_devdesc) == 0 || ((new string(dev_desc))->compare(target_devdesc1) == 0)) 
-                    && SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
+                if (regex_search(str_dev_name, m, com_regex) && m.length() > 0)
                 {
-                    string str_dev_name(dev_name);
-
-                    if (regex_search(str_dev_name, m, com_regex) && m.length() > 0)
-                    {
-                        port_name = m[0];
-                    }
+                    port_name = m[0];
                 }
             }
         }
+    }
 
-        SetupDiDestroyDeviceInfoList(hDevInfo);
+    SetupDiDestroyDeviceInfoList(hDevInfo);
 
-        if (port_name.length() == 0)
+    if (port_name.length() == 0)
+    {
+        cout << "Find no suitable COM-ports." << endl;
+    }
+    else
+    {
+        cout << "Port name: " << port_name << endl;
+        ObserveImage(port_name);
+
+        // Пробуем послать туда сингал.
+        /*HANDLE port;
+        port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+        if (port == INVALID_HANDLE_VALUE)
         {
-            cout << "Find no suitable COM-ports." << endl;
+            cout << "Error on opening COM-port." << endl;
+            ExitProcess(1);
         }
         else
         {
-            cout << "Port name: " << port_name << endl;
-            ObserveImage(port_name);
+            cout << "COM-port opened." << endl;
 
-            // Пробуем послать туда сингал.
-            /*HANDLE port;
-            port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-            if (port == INVALID_HANDLE_VALUE)
+            short keyState = 0;
+            while(keyState >= 0)
             {
-                cout << "Error on opening COM-port." << endl;
-                ExitProcess(1);
-            }
-            else
-            {
-                cout << "COM-port opened." << endl;
+                DWORD dwBytesWritten;
+                int buffer[4];
+                int* s;
+                buffer[0] = 1;
+                buffer[1] = 2;
+                buffer[2] = 3;
+                buffer[3] = 4;
+                s = &buffer[0];
+                WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
 
-                short keyState = 0;
-                while(keyState >= 0)
+                cout << s << endl;
+
+                if (waitKey(30) == 27)
                 {
-                    DWORD dwBytesWritten;
-                    int buffer[4];
-                    int* s;
-                    buffer[0] = 1;
-                    buffer[1] = 2;
-                    buffer[2] = 3;
-                    buffer[3] = 4;
-                    s = &buffer[0];
-                    WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
-
-                    cout << s << endl;
-
-                    if (waitKey(30) == 27)
-                    {
-                        break;
-                    }
-
-                    keyState = GetAsyncKeyState(VK_ESCAPE);
+                    break;
                 }
+
+                keyState = GetAsyncKeyState(VK_ESCAPE);
             }
-            CloseHandle(port);*/
         }
-    } while (0);
+        CloseHandle(port);*/
+    }
 }
