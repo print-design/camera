@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
         DeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
         DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-        cout << "Friendly names: " << endl;
+        cout << "Device friendly names: " << endl;
 
         for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
         {
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        cout << "Device desc: " << endl;
+        cout << "Device descriptions: " << endl;
 
         for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInfoData); i++)
         {
@@ -104,8 +104,6 @@ int main(int argc, char* argv[])
                 if ((new string(dev_desc))->compare(target_devdesc) == 0 
                     && SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
                 {
-                    //cout << endl << dev_name << endl;
-
                     string str_dev_name(dev_name);
 
                     if (regex_search(str_dev_name, m, com_regex) && m.length() > 0)
@@ -116,12 +114,16 @@ int main(int argc, char* argv[])
             }
         }
 
-        cout << "Port mumber: " << endl;
-        cout << " -- " << port_number << endl;
-
         SetupDiDestroyDeviceInfoList(hDevInfo);
 
-        std::cout << "Finished." << std::endl << std::endl;
+        if (port_number.length() == 0)
+        {
+            cout << "Find no suitable COM-ports.";
+        }
+        else
+        {
+            cout << endl << "Port name: " << port_number << endl << endl;
+        }
 
         // Камеры
         MV_CC_DEVICE_INFO_LIST stDeviceList;

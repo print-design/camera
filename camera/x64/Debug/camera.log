@@ -3,13 +3,13 @@ C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(9,10): warning C4067
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(11,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(49,1): warning C4010: однострочный комментарий содержит знак объединения строк
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(133,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(133,20):
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(135,20): warning C4473: "printf": передано недостаточно аргументов для строки формата
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(135,20):
       заполнители и их параметры ожидают переменное число аргументов в количестве 1, но было предоставлено 0
-      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(133,20):
+      C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(135,20):
       отсутствующий вариативный аргумент "1" требуется для строки форматирования "%x"
   
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(384,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 380
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(429,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(386,25): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 382
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(431,24): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(70,15): warning C4101: szBuffer: неиспользованная локальная переменная
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
