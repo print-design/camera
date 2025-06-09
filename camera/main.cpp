@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     bool showOriginal = false;
 
     string target_devdesc = "USB-SERIAL CH340";
-    string port_number = "";
+    string port_name = "";
 
     do
     {
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 
                     if (regex_search(str_dev_name, m, com_regex) && m.length() > 0)
                     {
-                        port_number = m[0];
+                        port_name = m[0];
                     }
                 }
             }
@@ -116,13 +116,27 @@ int main(int argc, char* argv[])
 
         SetupDiDestroyDeviceInfoList(hDevInfo);
 
-        if (port_number.length() == 0)
+        if (port_name.length() == 0)
         {
             cout << "Find no suitable COM-ports.";
         }
         else
         {
-            cout << endl << "Port name: " << port_number << endl << endl;
+            cout << "Port name: " << port_name << endl;
+
+            // Пробуем послать туда сингал.
+            HANDLE port;
+            port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+            if (port == INVALID_HANDLE_VALUE)
+            {
+                cout << "Error on opening COM-port." << endl;
+                ExitProcess(1);
+            }
+            else
+            {
+                cout << "COM-port opened." << endl;
+            }
+            CloseHandle(port);
         }
 
         // Камеры
