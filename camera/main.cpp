@@ -14,6 +14,10 @@
 using namespace cv;
 using namespace std;
 
+bool brak;
+bool stop;
+mutex mx;
+
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
     if (NULL == pstMVDevInfo)
@@ -97,8 +101,8 @@ void ObserveImage(string port_name, void* handle)
     bool hasFragment = false;
     Mat result;
     int method = TM_CCOEFF_NORMED;
-
     MVCC_INTVALUE stParam;
+
     memset(&stParam, 0, sizeof(MVCC_INTVALUE));
     nRet = MV_CC_GetIntValue(handle, "PayloadSize", &stParam);
     if (MV_OK != nRet)
