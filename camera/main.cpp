@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
     bool showOriginal = false;
 
     string target_devdesc = "USB-SERIAL CH340";
+    string target_devdesc1 = "USB-Enhanced-SERIAL CH343";
+    string target_mfg = "wch.cn";
+    string target_enumerator_name = "USB";
     string port_name = "";
 
     do
@@ -67,6 +70,7 @@ int main(int argc, char* argv[])
         SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
         char dev_name[1024];
         char dev_desc[1024];
+        char dev_mfg[1024];
         WCHAR szBuffer[400];
         
         const regex com_regex(R"(COM\d+)");
@@ -101,7 +105,7 @@ int main(int argc, char* argv[])
             {
                 cout << " -- " << dev_desc << endl;
 
-                if ((new string(dev_desc))->compare(target_devdesc) == 0 
+                if (((new string(dev_desc))->compare(target_devdesc) == 0 || ((new string(dev_desc))->compare(target_devdesc1) == 0)) 
                     && SetupDiGetDeviceRegistryPropertyA(hDevInfo, &DeviceInfoData, SPDRP_FRIENDLYNAME, NULL, (UCHAR*)dev_name, sizeof(dev_name), NULL))
                 {
                     string str_dev_name(dev_name);
@@ -118,7 +122,7 @@ int main(int argc, char* argv[])
 
         if (port_name.length() == 0)
         {
-            cout << "Find no suitable COM-ports.";
+            cout << "Find no suitable COM-ports." << endl;
         }
         else
         {
@@ -135,6 +139,29 @@ int main(int argc, char* argv[])
             else
             {
                 cout << "COM-port opened." << endl;
+
+                short keyState = 0;
+                while(keyState >= 0)
+                {
+                    DWORD dwBytesWritten;
+                    int buffer[4];
+                    int* s;
+                    buffer[0] = 1;
+                    buffer[1] = 2;
+                    buffer[2] = 3;
+                    buffer[3] = 4;
+                    s = &buffer[0];
+                    WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
+
+                    cout << s << endl;
+
+                    if (waitKey(30) == 27)
+                    {
+                        break;
+                    }
+
+                    keyState = GetAsyncKeyState(VK_ESCAPE);
+                }
             }
             CloseHandle(port);
         }
