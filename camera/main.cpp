@@ -76,91 +76,20 @@ void Signal(string port_name)
     CloseHandle(port);
 }
 
-void ObserveImage(string port_name)
+void ObserveImage(string port_name, void* handle)
 {
     int nRet = MV_OK;
-    void* handle = NULL;
-    unsigned char* pData = NULL;
     bool showOriginal = false;
 
-    // Камеры
-    MV_CC_DEVICE_INFO_LIST stDeviceList;
-    memset(&stDeviceList, 0, sizeof(MV_CC_DEVICE_INFO_LIST));
-
-    nRet = MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, &stDeviceList);
-    if (MV_OK != nRet)
-    {
-        printf("Enum Devices fail! nRet [0x%x]\n", nRet);
-        return;
-    }
-
-    if (stDeviceList.nDeviceNum > 0)
-    {
-        for (unsigned int i = 0; i < stDeviceList.nDeviceNum; i++)
-        {
-            printf("[device %d]:\n", i);
-            MV_CC_DEVICE_INFO* pDeviceInfo = stDeviceList.pDeviceInfo[i];
-            if (NULL == pDeviceInfo)
-            {
-                break;
-            }
-            PrintDeviceInfo(pDeviceInfo);
-        }
-    }
-    else
-    {
-        printf("Find No Devices!\n");
-        return;
-    }
-
-    unsigned int nIndex = 0;
-
-    nRet = MV_CC_CreateHandle(&handle, stDeviceList.pDeviceInfo[nIndex]);
-    if (MV_OK != nRet)
-    {
-        printf("Create Handle fail! nRet [0x%x]\n", nRet);
-        return;
-    }
-
-    nRet = MV_CC_OpenDevice(handle);
-    if (MV_OK != nRet)
-    {
-        printf("Open Device fail! nRet [0x%x]", nRet);
-        MV_CC_CloseDevice(handle);
-        return;
-    }
-
-    if (MV_GIGE_DEVICE == stDeviceList.pDeviceInfo[nIndex]->nTLayerType)
-    {
-        int nPacketSize = MV_CC_GetOptimalPacketSize(handle);
-        if (nPacketSize > 0)
-        {
-            nRet = MV_CC_SetIntValue(handle, "GevSCPSPacketSize", nPacketSize);
-            if (MV_OK != nRet)
-            {
-                printf("Warning: Set Packet Size fail! nRet [0x%x]!", nRet);
-            }
-        }
-        else
-        {
-            printf("Warning: Get Packet Size fail! nRet [0x%x]!", nPacketSize);
-        }
-    }
-
-    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    if (MV_OK != nRet)
-    {
-        printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
-        return;
-    }
-
-    /*nRet = MV_CC_SetEnumValue(handle, "PixelFormat", PixelType_Gvsp_BayerRG8);
-    if (MV_OK != nRet)
-    {
-        printf("Set Pixel Format fail! nRet [0x%x]\n", nRet);
-        MV_CC_CloseDevice(handle);
-        break;
-    }*/
+    int fragmentX = 200;
+    int fragmentY = 200;
+    int fragmentWidth = 600;
+    int fragmentHeight = 600;
+    Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
+    Mat original;
+    bool hasFragment = false;
+    Mat result;
+    int method = TM_CCOEFF_NORMED;
 
     MVCC_INTVALUE stParam;
     memset(&stParam, 0, sizeof(MVCC_INTVALUE));
@@ -171,6 +100,7 @@ void ObserveImage(string port_name)
         return;
     }
     unsigned int nPayloadSize = stParam.nCurValue;
+    unsigned char* pData = NULL;
 
     MV_FRAME_OUT_INFO_EX stImageInfo = { 0 };
     memset(&stImageInfo, 0, sizeof(MV_FRAME_OUT_INFO_EX));
@@ -188,16 +118,6 @@ void ObserveImage(string port_name)
         printf("Start Grabbing fail! nRet [0x%x]\n", nRet);
         return;
     }
-
-    int fragmentX = 200;
-    int fragmentY = 200;
-    int fragmentWidth = 600;
-    int fragmentHeight = 600;
-    Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
-    Mat original;
-    bool hasFragment = false;
-    Mat result;
-    int method = TM_CCOEFF_NORMED;
 
     nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
     if (MV_OK == nRet)
@@ -406,7 +326,7 @@ int main(int argc, char* argv[])
     string target_enumerator_name = "USB";
     string port_name = "";
 
-    // COM-порты
+    // Просматриваем COM-порты
     HDEVINFO hDevInfo;
     SP_DEVINFO_DATA DeviceInfoData;
     SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
@@ -463,50 +383,104 @@ int main(int argc, char* argv[])
 
     SetupDiDestroyDeviceInfoList(hDevInfo);
 
+    // Если нет нужного порта, выводим сообщение и останавливаем программу.
     if (port_name.length() == 0)
     {
         cout << "Find no suitable COM-ports." << endl;
+        return 0;
+    }
+
+    cout << "Port name: " << port_name << endl;
+
+    // Просматриваем камеры
+    int nRet = MV_OK;
+    void* handle = NULL;
+    
+
+    // Камеры
+    MV_CC_DEVICE_INFO_LIST stDeviceList;
+    memset(&stDeviceList, 0, sizeof(MV_CC_DEVICE_INFO_LIST));
+
+    nRet = MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, &stDeviceList);
+    if (MV_OK != nRet)
+    {
+        printf("Enum Devices fail! nRet [0x%x]\n", nRet);
+        return 0;
+    }
+
+    if (stDeviceList.nDeviceNum > 0)
+    {
+        for (unsigned int i = 0; i < stDeviceList.nDeviceNum; i++)
+        {
+            printf("[device %d]:\n", i);
+            MV_CC_DEVICE_INFO* pDeviceInfo = stDeviceList.pDeviceInfo[i];
+            if (NULL == pDeviceInfo)
+            {
+                break;
+            }
+            PrintDeviceInfo(pDeviceInfo);
+        }
     }
     else
     {
-        cout << "Port name: " << port_name << endl;
-        ObserveImage(port_name);
+        printf("Find No Devices!\n");
+        return 0;
+    }
 
-        // Пробуем послать туда сингал.
-        /*HANDLE port;
-        port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-        if (port == INVALID_HANDLE_VALUE)
+    unsigned int nIndex = 0;
+
+    nRet = MV_CC_CreateHandle(&handle, stDeviceList.pDeviceInfo[nIndex]);
+    if (MV_OK != nRet)
+    {
+        printf("Create Handle fail! nRet [0x%x]\n", nRet);
+        return 0;
+    }
+
+    nRet = MV_CC_OpenDevice(handle);
+    if (MV_OK != nRet)
+    {
+        printf("Open Device fail! nRet [0x%x]", nRet);
+        MV_CC_CloseDevice(handle);
+        return 0;
+    }
+
+    if (MV_GIGE_DEVICE == stDeviceList.pDeviceInfo[nIndex]->nTLayerType)
+    {
+        int nPacketSize = MV_CC_GetOptimalPacketSize(handle);
+        if (nPacketSize > 0)
         {
-            cout << "Error on opening COM-port." << endl;
-            ExitProcess(1);
+            nRet = MV_CC_SetIntValue(handle, "GevSCPSPacketSize", nPacketSize);
+            if (MV_OK != nRet)
+            {
+                printf("Warning: Set Packet Size fail! nRet [0x%x]!", nRet);
+            }
         }
         else
         {
-            cout << "COM-port opened." << endl;
-
-            short keyState = 0;
-            while(keyState >= 0)
-            {
-                DWORD dwBytesWritten;
-                int buffer[4];
-                int* s;
-                buffer[0] = 1;
-                buffer[1] = 2;
-                buffer[2] = 3;
-                buffer[3] = 4;
-                s = &buffer[0];
-                WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
-
-                cout << s << endl;
-
-                if (waitKey(30) == 27)
-                {
-                    break;
-                }
-
-                keyState = GetAsyncKeyState(VK_ESCAPE);
-            }
+            printf("Warning: Get Packet Size fail! nRet [0x%x]!", nPacketSize);
         }
-        CloseHandle(port);*/
     }
+
+    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    if (MV_OK != nRet)
+    {
+        printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
+        return 0;
+    }
+
+    /*nRet = MV_CC_SetEnumValue(handle, "PixelFormat", PixelType_Gvsp_BayerRG8);
+    if (MV_OK != nRet)
+    {
+        printf("Set Pixel Format fail! nRet [0x%x]\n", nRet);
+        MV_CC_CloseDevice(handle);
+        break;
+    }*/
+
+    // Если всё в порядке, то запускаем просмотр
+    ObserveImage(port_name, handle);
+
+    thread threadObserveImage = thread(ObserveImage, port_name, handle);
+    threadObserveImage.join();
+
+    return 1;
 }
