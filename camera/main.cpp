@@ -14,9 +14,8 @@
 using namespace cv;
 using namespace std;
 
-bool brak;
-bool stop;
-mutex mx;
+atomic<bool> brak = false;
+atomic<bool> stop = false;
 
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
@@ -54,7 +53,53 @@ void Signal(string port_name)
 {
     while (true)
     {
-        cout << "brak" << endl;
+        if (brak)
+        {
+            HANDLE port;
+            port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+            if (port == INVALID_HANDLE_VALUE)
+            {
+                cout << "Error on opening COM-port." << endl;
+                ExitProcess(1);
+            }
+            else
+            {
+                cout << "COM-port opened." << endl;
+
+                while (true)
+                {
+                    DWORD dwBytesWritten;
+                    int buffer[4];
+                    int* s;
+                    buffer[0] = 1;
+                    buffer[1] = 2;
+                    buffer[2] = 3;
+                    buffer[3] = 4;
+                    s = &buffer[0];
+                    WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
+
+                    if (stop)
+                    {
+                        break;
+                    }
+                }
+            }
+            CloseHandle(port);
+        }
+
+        if (brak)
+        {
+            cout << "brak" << endl;
+        }
+        else
+        {
+            cout << "OK" << endl;
+        }
+
+        if (stop)
+        {
+            break;
+        }
     }
 
     /*HANDLE port;
@@ -275,6 +320,7 @@ void ObserveImage(string port_name, void* handle)
                     catch (cv::Exception cve)
                     {
                         putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        brak = true;
                     }
 
                     imshow("Image", rgbImage);
@@ -294,6 +340,7 @@ void ObserveImage(string port_name, void* handle)
 
                     if (waitKey(30) == 27)
                     {
+                        stop = true;
                         break;
                     }
                 }
