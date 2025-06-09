@@ -98,6 +98,7 @@ void Signal(string port_name)
 
         if (stop)
         {
+            cout << "stop" << endl;
             break;
         }
     }
