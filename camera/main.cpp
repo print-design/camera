@@ -284,6 +284,7 @@ void ObserveImage(string port_name, void* handle)
                         {
                             putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                             switchedOff = false;
+                            brak = false;
                         }
                         else
                         {
