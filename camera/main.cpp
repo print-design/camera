@@ -87,15 +87,6 @@ void Signal(string port_name)
             CloseHandle(port);
         }
 
-        if (brak)
-        {
-            cout << "brak" << endl;
-        }
-        else
-        {
-            cout << "OK" << endl;
-        }
-
         if (stop)
         {
             cout << "stop" << endl;
