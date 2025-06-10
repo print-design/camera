@@ -73,7 +73,7 @@ void Signal(string port_name)
 {
     while (true)
     {
-        if (brak)
+        if (brak && !switchedOff)
         {
             HANDLE port;
             port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
@@ -86,7 +86,7 @@ void Signal(string port_name)
             {
                 cout << "COM-port opened." << endl;
 
-                while (true)
+                while (brak && !switchedOff)
                 {
                     DWORD dwBytesWritten;
                     int buffer[4];
