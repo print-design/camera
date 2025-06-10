@@ -140,6 +140,9 @@
     <ClInclude Include="tty.h" />
     <ClInclude Include="usblister.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Pictures\stopsignal.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
