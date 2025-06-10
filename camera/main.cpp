@@ -16,6 +16,26 @@ using namespace std;
 
 atomic<bool> brak = false;
 atomic<bool> stop = false;
+atomic<bool> switchedOff = false;
+atomic<int> switchOffRectTop = 0;
+atomic<int> switchOffRectLeft = 0;
+atomic<int> switchOffRectWidth = 0;
+atomic<int> switchOffRectHeight = 0;
+
+void StopSignal(int event, int x, int y, int flags, void* userdata)
+{
+    if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
+    {
+        if (event == EVENT_LBUTTONDOWN)
+        {
+            switchedOff = true;
+        }
+        else if (event == EVENT_MOUSEMOVE)
+        {
+            //
+        }
+    }
+}
 
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
@@ -263,15 +283,27 @@ void ObserveImage(string port_name, void* handle)
                         if (norm(currentCrop, originalCrop) < 50000)
                         {
                             putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            switchedOff = false;
                         }
                         else
                         {
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                            brak = true;
+                            if (!switchedOff)
+                            {
+                                brak = true;
+                            }
 
-                            Rect switchOffRect(maxLoc.x + 200, maxLoc.y + fragment.rows + 15, 200, 40);
-                            rectangle(rgbImage, switchOffRect, Scalar(0, 0, 255), -1);
-                            putText(rgbImage, "Stop signal", Point(maxLoc.x + 210, maxLoc.y + fragment.rows + 40), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                            if (brak && !switchedOff)
+                            {
+                                switchOffRectLeft = maxLoc.x + 200;
+                                switchOffRectTop = maxLoc.y + fragment.rows + 15;
+                                switchOffRectWidth = 200;
+                                switchOffRectHeight = 40;
+                                Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
+                                rectangle(rgbImage, switchOffRect, Scalar(0, 0, 255), -1);
+                                putText(rgbImage, "Stop signal", Point(maxLoc.x + 210, maxLoc.y + fragment.rows + 40), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                                setMouseCallback("Image", StopSignal, NULL);
+                            }
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
