@@ -256,8 +256,6 @@ void ObserveImage(string port_name, void* handle)
                             originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                         }
 
-                        Point pt1(fragmentX, fragmentY);
-                        Point pt2(fragmentX + fragmentWidth, fragmentY + fragmentHeight);
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
                         cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
                         putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
@@ -270,6 +268,9 @@ void ObserveImage(string port_name, void* handle)
                         {
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                             brak = true;
+
+                            Rect switchOffRect(maxLoc.x + 200, maxLoc.y + fragment.rows + 15, 200, 40);
+                            rectangle(rgbImage, switchOffRect, Scalar(0, 0, 255), -1);
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
