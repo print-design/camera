@@ -102,35 +102,6 @@ void Signal(string port_name)
             break;
         }
     }
-
-    /*HANDLE port;
-    port = CreateFileA(port_name.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-    if (port == INVALID_HANDLE_VALUE)
-    {
-        cout << "Error on opening COM-port." << endl;
-        ExitProcess(1);
-    }
-    else
-    {
-        cout << "COM-port opened." << endl;
-
-        short keyState = 0;
-        while (keyState >= 0)
-        {
-            DWORD dwBytesWritten;
-            int buffer[4];
-            int* s;
-            buffer[0] = 1;
-            buffer[1] = 2;
-            buffer[2] = 3;
-            buffer[3] = 4;
-            s = &buffer[0];
-            WriteFile(port, buffer, 3, &dwBytesWritten, NULL);
-
-            keyState = GetAsyncKeyState(VK_ESCAPE);
-        }
-    }
-    CloseHandle(port);*/
 }
 
 void ObserveImage(string port_name, void* handle)
@@ -307,6 +278,7 @@ void ObserveImage(string port_name, void* handle)
                         else
                         {
                             putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                            brak = true;
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
@@ -321,7 +293,6 @@ void ObserveImage(string port_name, void* handle)
                     catch (cv::Exception cve)
                     {
                         putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                        brak = true;
                     }
 
                     imshow("Image", rgbImage);

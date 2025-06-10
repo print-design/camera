@@ -2,8 +2,8 @@
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(11,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(12,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(321,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 317
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(368,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(389,11): warning C4101: szBuffer: неиспользованная локальная переменная
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(388,10): warning C4101: dev_mfg: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(293,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 289
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(339,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(360,11): warning C4101: szBuffer: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(359,10): warning C4101: dev_mfg: неиспользованная локальная переменная
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
