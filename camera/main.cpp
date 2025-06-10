@@ -271,6 +271,7 @@ void ObserveImage(string port_name, void* handle)
 
                             Rect switchOffRect(maxLoc.x + 200, maxLoc.y + fragment.rows + 15, 200, 40);
                             rectangle(rgbImage, switchOffRect, Scalar(0, 0, 255), -1);
+                            putText(rgbImage, "Stop signal", Point(maxLoc.x + 210, maxLoc.y + fragment.rows + 40), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
                         }
 
                         cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
