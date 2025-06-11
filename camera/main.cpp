@@ -30,10 +30,6 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
         {
             switchedOff = true;
         }
-        else if (event == EVENT_MOUSEMOVE)
-        {
-            //
-        }
     }
 }
 
@@ -174,8 +170,15 @@ void ObserveImage(string port_name, void* handle)
     }
     else
     {
-        namedWindow("Image", WINDOW_AUTOSIZE);
-        namedWindow("Compare", WINDOW_AUTOSIZE);
+        //namedWindow("Image", WINDOW_AUTOSIZE);
+        //namedWindow("Compare", WINDOW_AUTOSIZE);
+
+        RECT desktop;
+        const HWND hDesktop = GetDesktopWindow();
+        GetWindowRect(hDesktop, &desktop);
+        int desktopWidth = desktop.right;
+        int desktopHeight = desktop.bottom;
+        namedWindow("Final", WINDOW_NORMAL);
 
         while (1)
         {
@@ -321,20 +324,47 @@ void ObserveImage(string port_name, void* handle)
                         putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                     }
 
-                    imshow("Image", rgbImage);
+                    Mat matFinal(desktopHeight, desktopWidth, CV_8UC3);
+
+                    Mat resizedRgbImage;
+                    int rgbImageWidth = desktopWidth / 2;
+                    int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
+                    resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
+                    resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
+                    //putText(matFinal, cv::format("%d", matFinal.cols /*desktop.right*/), Point(150, 150), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 0));
+                    //imshow("Image", rgbImage);
                     rgbImage.release();
 
                     if (showOriginal)
                     {
-                        imshow("Compare", originalCrop);
+                        Mat resizedOriginalCrop;
+                        int originalCropWidth = desktopWidth / 2;
+                        int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
+                        resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
+                        resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
+                        //imshow("Compare", originalCrop);
                         originalCrop.release();
                     }
                     else
                     {
-                        imshow("Compare", currentCrop);
+                        Mat resizedCurrentCrop;
+                        int currentCropWidth = desktopWidth / 2;
+                        int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
+                        resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
+                        resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
+                        //imshow("Compare", currentCrop);
                         currentCrop.release();
                     }
                     showOriginal = !showOriginal;
+
+                    cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
+                    putText(matFinal, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                    cv::String currentSize = cv::format("X2 = %i, Y2 = %i", currentCrop.cols, currentCrop.rows);
+                    putText(matFinal, currentSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 200), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+
+                    imshow("Final", matFinal);
+                    resizedRgbImage.release();
+                    matFinal.release();
 
                     if (waitKey(30) == 27)
                     {
