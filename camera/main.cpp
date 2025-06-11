@@ -333,32 +333,61 @@ void ObserveImage(string port_name, void* handle)
                     resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
                     //putText(matFinal, cv::format("%d", matFinal.cols /*desktop.right*/), Point(150, 150), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 0));
                     //imshow("Image", rgbImage);
-                    rgbImage.release();
+                    Mat resizedOriginalCrop;
+                    Mat resizedCurrentCrop;
 
                     if (showOriginal)
                     {
-                        Mat resizedOriginalCrop;
                         int originalCropWidth = desktopWidth / 2;
                         int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
                         resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
                         resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
                         //imshow("Compare", originalCrop);
-                        originalCrop.release();
                     }
                     else
                     {
-                        Mat resizedCurrentCrop;
                         int currentCropWidth = desktopWidth / 2;
                         int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
                         resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
                         resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
                         //imshow("Compare", currentCrop);
-                        currentCrop.release();
                     }
                     showOriginal = !showOriginal;
 
+                    /*if (norm(currentCrop, originalCrop) < 50000)
+                    {
+                        putText(matFinal, "OK", Point(300, 500), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 9));
+                        switchedOff = false;
+                        brak = false;
+                    }
+                    else
+                    {
+                        putText(matFinal, "BRAK", Point(300, 550), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 0, 255));
+                        if (!switchedOff)
+                        {
+                            brak = true;
+                        }
+
+                        if (brak && !switchedOff)
+                        {
+                            switchOffRectLeft = 500;
+                            switchOffRectTop = 550;
+                            switchOffRectWidth = 200;
+                            switchOffRectHeight = 40;
+                            Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
+                            rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
+                            putText(matFinal, "Stop signal", Point(510, 570), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                            setMouseCallback("Image", StopSignal, NULL);
+                        }
+                    }*/
+
                     imshow("Final", matFinal);
+                    rgbImage.release();
+                    originalCrop.release();
+                    currentCrop.release();
                     resizedRgbImage.release();
+                    resizedOriginalCrop.release();
+                    resizedCurrentCrop.release();
                     matFinal.release();
 
                     if (waitKey(30) == 27)
