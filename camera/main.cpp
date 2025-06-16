@@ -124,6 +124,10 @@ void ObserveImage(string port_name, void* handle)
     Mat original;
     bool hasFragment = false;
     Mat result;
+
+    int textX = 300;
+    int textY = 500;
+
     int method = TM_CCOEFF_NORMED;
     MVCC_INTVALUE stParam;
 
@@ -280,10 +284,10 @@ void ObserveImage(string port_name, void* handle)
                         }
 
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-                        cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                        putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                        //cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                        //putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
 
-                        if (norm(currentCrop, originalCrop) < 50000)
+                        /*if (norm(currentCrop, originalCrop) < 50000)
                         {
                             putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
                             switchedOff = false;
@@ -308,7 +312,7 @@ void ObserveImage(string port_name, void* handle)
                                 putText(rgbImage, "Stop signal", Point(maxLoc.x + 210, maxLoc.y + fragment.rows + 40), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
                                 setMouseCallback("Image", StopSignal, NULL);
                             }
-                        }
+                        }*/
 
                         //cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
                         //putText(rgbImage, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
@@ -331,6 +335,8 @@ void ObserveImage(string port_name, void* handle)
                     int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
                     resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
                     resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
+
+                    textY = resizedRgbImage.rows + 30;
                     //putText(matFinal, cv::format("%d", matFinal.cols /*desktop.right*/), Point(150, 150), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 0));
                     //imshow("Image", rgbImage);
                     Mat resizedOriginalCrop;
@@ -354,15 +360,15 @@ void ObserveImage(string port_name, void* handle)
                     }
                     showOriginal = !showOriginal;
 
-                    /*if (norm(currentCrop, originalCrop) < 50000)
+                    if (norm(currentCrop, originalCrop) < 50000)
                     {
-                        putText(matFinal, "OK", Point(300, 500), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 9));
+                        putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                         switchedOff = false;
                         brak = false;
                     }
                     else
                     {
-                        putText(matFinal, "BRAK", Point(300, 550), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 0, 255));
+                        putText(matFinal, "BRAK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                         if (!switchedOff)
                         {
                             brak = true;
@@ -370,16 +376,19 @@ void ObserveImage(string port_name, void* handle)
 
                         if (brak && !switchedOff)
                         {
-                            switchOffRectLeft = 500;
-                            switchOffRectTop = 550;
+                            switchOffRectLeft = textX + 200;
+                            switchOffRectTop = textY - 30;
                             switchOffRectWidth = 200;
                             switchOffRectHeight = 40;
                             Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
                             rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
-                            putText(matFinal, "Stop signal", Point(510, 570), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                            setMouseCallback("Image", StopSignal, NULL);
+                            putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                            setMouseCallback("Final", StopSignal, NULL);
                         }
-                    }*/
+                    }
+
+                    cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                    putText(matFinal, text, Point(textX, textY + 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
 
                     imshow("Final", matFinal);
                     rgbImage.release();
