@@ -174,9 +174,6 @@ void ObserveImage(string port_name, void* handle)
     }
     else
     {
-        //namedWindow("Image", WINDOW_AUTOSIZE);
-        //namedWindow("Compare", WINDOW_AUTOSIZE);
-
         RECT desktop;
         const HWND hDesktop = GetDesktopWindow();
         GetWindowRect(hDesktop, &desktop);
@@ -234,6 +231,7 @@ void ObserveImage(string port_name, void* handle)
 
                     Mat currentCrop;
                     Mat originalCrop;
+                    Mat matFinal(desktopHeight, desktopWidth, CV_8UC3);
 
                     try
                     {
@@ -284,18 +282,43 @@ void ObserveImage(string port_name, void* handle)
                         }
 
                         rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-                        //cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                        //putText(rgbImage, text, Point(maxLoc.x, maxLoc.y + fragment.rows + 100), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
 
-                        /*if (norm(currentCrop, originalCrop) < 50000)
+                        Mat resizedRgbImage;
+                        int rgbImageWidth = desktopWidth / 2;
+                        int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
+                        resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
+                        resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
+
+                        textY = resizedRgbImage.rows + 30;
+
+                        Mat resizedOriginalCrop;
+                        Mat resizedCurrentCrop;
+
+                        if (showOriginal)
                         {
-                            putText(rgbImage, "OK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                            int originalCropWidth = desktopWidth / 2;
+                            int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
+                            resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
+                            resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
+                        }
+                        else
+                        {
+                            int currentCropWidth = desktopWidth / 2;
+                            int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
+                            resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
+                            resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
+                        }
+                        showOriginal = !showOriginal;
+
+                        if (norm(currentCrop, originalCrop) < 50000)
+                        {
+                            putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                             switchedOff = false;
                             brak = false;
                         }
                         else
                         {
-                            putText(rgbImage, "BRAK", Point(maxLoc.x, maxLoc.y + fragment.rows + 50), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                            putText(matFinal, "BRAK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                             if (!switchedOff)
                             {
                                 brak = true;
@@ -303,106 +326,42 @@ void ObserveImage(string port_name, void* handle)
 
                             if (brak && !switchedOff)
                             {
-                                switchOffRectLeft = maxLoc.x + 200;
-                                switchOffRectTop = maxLoc.y + fragment.rows + 15;
+                                switchOffRectLeft = textX + 200;
+                                switchOffRectTop = textY - 30;
                                 switchOffRectWidth = 200;
                                 switchOffRectHeight = 40;
                                 Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
-                                rectangle(rgbImage, switchOffRect, Scalar(0, 0, 255), -1);
-                                putText(rgbImage, "Stop signal", Point(maxLoc.x + 210, maxLoc.y + fragment.rows + 40), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                                setMouseCallback("Image", StopSignal, NULL);
+                                rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
+                                putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                                setMouseCallback("Final", StopSignal, NULL);
                             }
-                        }*/
+                        }
 
-                        //cv::String originalSize = cv::format("X1 = %i, Y1 = %i", originalCrop.cols, originalCrop.rows);
-                        //putText(rgbImage, originalSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 150), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
-                        //cv::String currentSize = cv::format("X2 = %i, Y2 = %i", currentCrop.cols, currentCrop.rows);
-                        //putText(rgbImage, currentSize, Point(maxLoc.x, maxLoc.y + fragment.rows + 200), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 9));
+                        cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                        putText(matFinal, text, Point(textX, textY + 40), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
+
+                        imshow("Final", matFinal);
+                        rgbImage.release();
+                        originalCrop.release();
+                        currentCrop.release();
+                        resizedRgbImage.release();
+                        resizedOriginalCrop.release();
+                        resizedCurrentCrop.release();
+                        matFinal.release();
+
+                        if (waitKey(30) == 27)
+                        {
+                            stop = true;
+                            break;
+                        }
                     }
                     catch (std::exception stde)
                     {
-                        putText(rgbImage, cv::format("std exception: %s", stde.what()), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        putText(matFinal, cv::format("std exception: %s", stde.what()), Point(textX, textY + 80), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                     }
                     catch (cv::Exception cve)
                     {
-                        putText(rgbImage, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(maxLoc.x, maxLoc.y + fragment.rows + 250), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                    }
-
-                    Mat matFinal(desktopHeight, desktopWidth, CV_8UC3);
-
-                    Mat resizedRgbImage;
-                    int rgbImageWidth = desktopWidth / 2;
-                    int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
-                    resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
-                    resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
-
-                    textY = resizedRgbImage.rows + 30;
-                    //putText(matFinal, cv::format("%d", matFinal.cols /*desktop.right*/), Point(150, 150), FONT_HERSHEY_COMPLEX, 5, Scalar(0, 255, 0));
-                    //imshow("Image", rgbImage);
-                    Mat resizedOriginalCrop;
-                    Mat resizedCurrentCrop;
-
-                    if (showOriginal)
-                    {
-                        int originalCropWidth = desktopWidth / 2;
-                        int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
-                        resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
-                        resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
-                        //imshow("Compare", originalCrop);
-                    }
-                    else
-                    {
-                        int currentCropWidth = desktopWidth / 2;
-                        int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
-                        resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
-                        resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
-                        //imshow("Compare", currentCrop);
-                    }
-                    showOriginal = !showOriginal;
-
-                    if (norm(currentCrop, originalCrop) < 50000)
-                    {
-                        putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
-                        switchedOff = false;
-                        brak = false;
-                    }
-                    else
-                    {
-                        putText(matFinal, "BRAK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                        if (!switchedOff)
-                        {
-                            brak = true;
-                        }
-
-                        if (brak && !switchedOff)
-                        {
-                            switchOffRectLeft = textX + 200;
-                            switchOffRectTop = textY - 30;
-                            switchOffRectWidth = 200;
-                            switchOffRectHeight = 40;
-                            Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
-                            rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
-                            putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                            setMouseCallback("Final", StopSignal, NULL);
-                        }
-                    }
-
-                    cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                    putText(matFinal, text, Point(textX, textY + 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
-
-                    imshow("Final", matFinal);
-                    rgbImage.release();
-                    originalCrop.release();
-                    currentCrop.release();
-                    resizedRgbImage.release();
-                    resizedOriginalCrop.release();
-                    resizedCurrentCrop.release();
-                    matFinal.release();
-
-                    if (waitKey(30) == 27)
-                    {
-                        stop = true;
-                        break;
+                        putText(matFinal, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(textX, textY + 80), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
                     }
                 }
             }
