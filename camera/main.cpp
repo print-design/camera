@@ -22,10 +22,10 @@ atomic<int> switchOffRectLeft = 0;
 atomic<int> switchOffRectWidth = 0;
 atomic<int> switchOffRectHeight = 0;
 
-atomic<int> fragmentX = 200;
-atomic<int> fragmentY = 200;
-atomic<int> fragmentWidth = 600;
-atomic<int> fragmentHeight = 600;
+atomic<int> fragmentX = 0; // 200;
+atomic<int> fragmentY = 0; // 200;
+atomic<int> fragmentWidth = 0; // 600;
+atomic<int> fragmentHeight = 0; // 600;
 
 void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
