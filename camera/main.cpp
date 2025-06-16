@@ -38,6 +38,17 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
     }
 }
 
+void DrawFragment(int event, int x, int y, int flags, void* userdata)
+{
+    if (EVENT_LBUTTONDOWN)
+    {
+        fragmentX = 200;
+        fragmentY = 200;
+        fragmentWidth = 600;
+        fragmentHeight = 600;
+    }
+}
+
 void PrintDeviceInfo(MV_CC_DEVICE_INFO* pstMVDevInfo)
 {
     if (NULL == pstMVDevInfo)
@@ -224,13 +235,21 @@ void ObserveImage(string port_name, void* handle)
                 }
                 else
                 {
-                    if (!hasFragment && fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
+                    if (!hasFragment)
                     {
-                        fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
-                        rgbImage.copyTo(original);
-                        fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
-                        result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
-                        hasFragment = true;
+                        if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
+                        {
+                            fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
+                            rgbImage.copyTo(original);
+                            fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
+                            result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
+                            hasFragment = true;
+                            setMouseCallback("Final", StopSignal, NULL);
+                        }
+                        else
+                        {
+                            setMouseCallback("Final", DrawFragment, NULL);
+                        }
                     }
 
                     int DeltaX = 0;
