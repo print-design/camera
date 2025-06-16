@@ -547,8 +547,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
+    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
     if (MV_OK != nRet)
     {
         printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
