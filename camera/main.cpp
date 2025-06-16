@@ -224,7 +224,7 @@ void ObserveImage(string port_name, void* handle)
                 }
                 else
                 {
-                    if (!hasFragment && fragmentHeight > 0 && fragmentWidth > 0)
+                    if (!hasFragment && fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
                     {
                         fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
                         rgbImage.copyTo(original);
@@ -233,16 +233,23 @@ void ObserveImage(string port_name, void* handle)
                         hasFragment = true;
                     }
 
-                    matchTemplate(rgbImage, fragment, result, method);
+                    int DeltaX = 0;
+                    int DeltaY = 0;
+
                     double minVal;
                     double maxVal;
                     Point minLoc;
                     Point maxLoc;
                     Point matchLoc;
-                    minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
 
-                    int DeltaX = maxLoc.x - fragmentX;
-                    int DeltaY = maxLoc.y - fragmentY;
+                    if (hasFragment)
+                    {
+                        matchTemplate(rgbImage, fragment, result, method);
+                        minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+
+                        DeltaX = maxLoc.x - fragmentX;
+                        DeltaY = maxLoc.y - fragmentY;
+                    }
 
                     Mat currentCrop;
                     Mat originalCrop;
@@ -250,118 +257,128 @@ void ObserveImage(string port_name, void* handle)
 
                     try
                     {
-                        if (DeltaX < 0 && DeltaY < 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX < 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX < 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY < 0)
-                        {
-                            currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX > 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY < 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY > 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
-                        }
-                        else if (DeltaX == 0 && DeltaY == 0)
-                        {
-                            currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
-                            originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
-                        }
-
-                        rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
-
                         Mat resizedRgbImage;
                         int rgbImageWidth = desktopWidth / 2;
                         int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
+
+                        if (hasFragment)
+                        {
+                            if (DeltaX < 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX < 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX < 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX > 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY < 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY > 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                            }
+                            else if (DeltaX == 0 && DeltaY == 0)
+                            {
+                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                                originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                            }
+
+                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
+                        }
+
                         resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
                         resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
-
                         textY = resizedRgbImage.rows + 30;
 
                         Mat resizedOriginalCrop;
                         Mat resizedCurrentCrop;
 
-                        if (showOriginal)
+                        if (hasFragment)
                         {
-                            int originalCropWidth = desktopWidth / 2;
-                            int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
-                            resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
-                            resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
-                        }
-                        else
-                        {
-                            int currentCropWidth = desktopWidth / 2;
-                            int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
-                            resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
-                            resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
-                        }
-                        showOriginal = !showOriginal;
-
-                        if (norm(currentCrop, originalCrop) < 50000)
-                        {
-                            putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
-                            switchedOff = false;
-                            brak = false;
-                        }
-                        else
-                        {
-                            putText(matFinal, "BRAK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-                            if (!switchedOff)
+                            if (showOriginal)
                             {
-                                brak = true;
+                                int originalCropWidth = desktopWidth / 2;
+                                int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
+                                resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
+                                resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
+                            }
+                            else
+                            {
+                                int currentCropWidth = desktopWidth / 2;
+                                int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
+                                resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
+                                resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
+                            }
+                            showOriginal = !showOriginal;
+
+                            if (norm(currentCrop, originalCrop) < 50000)
+                            {
+                                putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
+                                switchedOff = false;
+                                brak = false;
+                            }
+                            else
+                            {
+                                putText(matFinal, "BRAK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                                if (!switchedOff)
+                                {
+                                    brak = true;
+                                }
+
+                                if (brak && !switchedOff)
+                                {
+                                    switchOffRectLeft = textX + 200;
+                                    switchOffRectTop = textY - 30;
+                                    switchOffRectWidth = 200;
+                                    switchOffRectHeight = 40;
+                                    Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
+                                    rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
+                                    putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                                    setMouseCallback("Final", StopSignal, NULL);
+                                }
                             }
 
-                            if (brak && !switchedOff)
-                            {
-                                switchOffRectLeft = textX + 200;
-                                switchOffRectTop = textY - 30;
-                                switchOffRectWidth = 200;
-                                switchOffRectHeight = 40;
-                                Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
-                                rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
-                                putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                                setMouseCallback("Final", StopSignal, NULL);
-                            }
+                            cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
+                            putText(matFinal, text, Point(textX, textY + 40), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                         }
-
-                        cv::String text = cv::format("DeltaX = %i, DeltaY = %i", DeltaX, DeltaY);
-                        putText(matFinal, text, Point(textX, textY + 40), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
 
                         imshow("Final", matFinal);
+                        
+                        if (hasFragment)
+                        {
+                            originalCrop.release();
+                            currentCrop.release();
+                            resizedOriginalCrop.release();
+                            resizedCurrentCrop.release();
+                        }
                         rgbImage.release();
-                        originalCrop.release();
-                        currentCrop.release();
                         resizedRgbImage.release();
-                        resizedOriginalCrop.release();
-                        resizedCurrentCrop.release();
                         matFinal.release();
 
                         if (waitKey(30) == 27)
@@ -547,8 +564,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
+    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
     if (MV_OK != nRet)
     {
         printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
