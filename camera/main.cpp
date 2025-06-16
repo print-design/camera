@@ -22,6 +22,11 @@ atomic<int> switchOffRectLeft = 0;
 atomic<int> switchOffRectWidth = 0;
 atomic<int> switchOffRectHeight = 0;
 
+atomic<int> fragmentX = 200;
+atomic<int> fragmentY = 200;
+atomic<int> fragmentWidth = 600;
+atomic<int> fragmentHeight = 600;
+
 void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
     if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
@@ -115,12 +120,8 @@ void ObserveImage(string port_name, void* handle)
 {
     int nRet = MV_OK;
     bool showOriginal = false;
-
-    int fragmentX = 200;
-    int fragmentY = 200;
-    int fragmentWidth = 600;
-    int fragmentHeight = 600;
-    Mat fragment(fragmentHeight, fragmentWidth, CV_8UC3);
+    
+    Mat fragment;
     Mat original;
     bool hasFragment = false;
     Mat result;
@@ -212,6 +213,7 @@ void ObserveImage(string port_name, void* handle)
                 {
                     if (!hasFragment)
                     {
+                        fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
                         rgbImage.copyTo(original);
                         fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
                         result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
