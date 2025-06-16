@@ -211,7 +211,7 @@ void ObserveImage(string port_name, void* handle)
                 }
                 else
                 {
-                    if (!hasFragment)
+                    if (!hasFragment && fragmentHeight > 0 && fragmentWidth > 0)
                     {
                         fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
                         rgbImage.copyTo(original);
