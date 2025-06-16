@@ -181,19 +181,32 @@ void ObserveImage(string port_name, void* handle)
         int desktopWidth = desktop.right;
         int desktopHeight = desktop.bottom;
         namedWindow("Final", WINDOW_NORMAL);
+        bool firstFrame = false;
 
         while (1)
         {
             nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
-            if (MV_OK == nRet)
-            {
-                printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
-            }
-            else
+            while (MV_OK != nRet && !firstFrame)
             {
                 printf("Get Frame fail! nRet [0x%x]\n", nRet);
-                break;
+
+                nRet = MV_CC_GetOneFrameTimeout(handle, pData, nPayloadSize, &stImageInfo, 1000);
+                if (MV_OK == nRet)
+                {
+                    printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
+                    firstFrame = true;
+                }
             }
+
+            //if (MV_OK == nRet)
+            //{
+            //    printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
+            //}
+            //else
+            //{
+            //    printf("Get Frame fail! nRet [0x%x]\n", nRet);
+            //    break;
+            //}
 
             if (NULL == pData)
             {
