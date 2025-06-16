@@ -27,6 +27,11 @@ atomic<int> fragmentY = 0; // 200;
 atomic<int> fragmentWidth = 0; // 600;
 atomic<int> fragmentHeight = 0; // 600;
 
+atomic<int> drawFragmentX1 = 0;
+atomic<int> drawFragmentY1 = 0;
+atomic<int> drawFragmentX2 = 0;
+atomic<int> drawFragmentY2 = 0;
+
 void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
     if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
