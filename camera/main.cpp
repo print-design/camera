@@ -32,6 +32,9 @@ atomic<int> drawFragmentY1 = 0;
 atomic<int> drawFragmentX2 = 0;
 atomic<int> drawFragmentY2 = 0;
 
+atomic<int> rgbImageWidth = 0;
+atomic<int> rgbImageHeight = 0;
+
 void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
     if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
@@ -45,12 +48,15 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-    if (EVENT_LBUTTONDOWN)
+    if (event == EVENT_LBUTTONUP)
     {
-        fragmentX = 200;
-        fragmentY = 200;
-        fragmentWidth = 600;
-        fragmentHeight = 600;
+        if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight)
+        {
+            fragmentX = 200;
+            fragmentY = 200;
+            fragmentWidth = 600;
+            fragmentHeight = 600;
+        }
     }
 }
 
@@ -282,8 +288,8 @@ void ObserveImage(string port_name, void* handle)
                     try
                     {
                         Mat resizedRgbImage;
-                        int rgbImageWidth = desktopWidth / 2;
-                        int rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
+                        rgbImageWidth = desktopWidth / 2;
+                        rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
 
                         if (hasFragment)
                         {
