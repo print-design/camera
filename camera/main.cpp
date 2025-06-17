@@ -18,6 +18,8 @@ atomic<bool> hasFragment = false;
 atomic<bool> brak = false;
 atomic<bool> stop = false;
 atomic<bool> switchedOff = false;
+atomic<bool> mouseMoving = false;
+
 atomic<int> switchOffRectTop = 0;
 atomic<int> switchOffRectLeft = 0;
 atomic<int> switchOffRectWidth = 0;
@@ -73,10 +75,18 @@ void DrawFragment(int event, int x, int y, int flags, void* userdata)
             drawFragmentX1 = x;
             drawFragmentY1 = y;
         }
+        else if (event == (EVENT_MOUSEMOVE | EVENT_LBUTTONDOWN))
+        {
+            drawFragmentX2 = x;
+            drawFragmentY2 = y;
+            mouseMoving = true;
+            cout << "MOVE" << endl;
+        }
         else if (event == EVENT_LBUTTONUP)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
+            mouseMoving = false;
 
             int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
             int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
@@ -383,6 +393,11 @@ void ObserveImage(string port_name, void* handle)
                         resizedRgbImage.copyTo(matFinal(Rect(0, 0, resizedImageWidth, resizedImageHeight)));
                         textY = resizedRgbImage.rows + 30;
 
+                        while (mouseMoving)
+                        {
+                            //
+                        }
+                        
                         Mat resizedOriginalCrop;
                         Mat resizedCurrentCrop;
 
