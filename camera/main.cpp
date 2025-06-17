@@ -367,7 +367,11 @@ void ObserveImage(string port_name, void* handle)
                             }
                             showOriginal = !showOriginal;
 
-                            if (norm(currentCrop, originalCrop) < 50000)
+                            int normCurrentCrop = norm(currentCrop);
+                            int normOriginalCrop = norm(originalCrop);
+                            int cropsDifferencePercent = abs(normOriginalCrop - normCurrentCrop) * 100 / normOriginalCrop;
+
+                            if(cropsDifferencePercent < 5)
                             {
                                 putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                                 switchedOff = false;
