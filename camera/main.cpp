@@ -33,9 +33,10 @@ atomic<int> drawFragmentY1 = 0;
 atomic<int> drawFragmentX2 = 0;
 atomic<int> drawFragmentY2 = 0;
 
-atomic<int> rgbImageWidth = 0;
-atomic<int> rgbImageHeight = 0;
-
+atomic<int> imageWidth = 0;
+atomic<int> imageHeight = 0;
+atomic<int> resizedImageWidth = 0;
+atomic<int> resizedImageHeight = 0;
 atomic<int> desktopWidth = 0;
 atomic<int> desktopHeight = 0;
 
@@ -47,7 +48,7 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
         {
             switchedOff = true;
         }
-        else if(rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight && desktopWidth > 0 && desktopHeight > 0)
+        else if(resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && desktopWidth > 0 && desktopHeight > 0)
         {
             drawFragmentX2 = 0;
             drawFragmentY2 = 0;
@@ -65,7 +66,7 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-    if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight && desktopWidth > 0 && desktopHeight > 0)
+    if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && desktopWidth > 0 && desktopHeight > 0)
     {
         if (event == EVENT_LBUTTONDOWN)
         {
@@ -84,10 +85,10 @@ void DrawFragment(int event, int x, int y, int flags, void* userdata)
 
             if (drawFragmentXmin < drawFragmentXmax && drawFragmentYmin < drawFragmentYmax)
             {
-                fragmentX = drawFragmentXmin * desktopWidth / rgbImageWidth;
-                fragmentY = drawFragmentYmin * desktopHeight / rgbImageHeight;
-                fragmentWidth = (drawFragmentXmax - drawFragmentXmin) * desktopWidth / rgbImageWidth;
-                fragmentHeight = (drawFragmentYmax - drawFragmentYmin) * desktopHeight / rgbImageHeight;
+                fragmentX = (drawFragmentXmin * desktopWidth / resizedImageWidth) * imageWidth / desktopWidth;
+                fragmentY = (drawFragmentYmin * desktopHeight / resizedImageHeight) * imageHeight / desktopHeight;
+                fragmentWidth = ((drawFragmentXmax - drawFragmentXmin) * desktopWidth / resizedImageWidth) * imageWidth / desktopWidth;
+                fragmentHeight = ((drawFragmentYmax - drawFragmentYmin) * desktopHeight / resizedImageHeight) * imageHeight / desktopHeight;
             }
         }
     }
@@ -249,8 +250,12 @@ void ObserveImage(string port_name, void* handle)
                 {
                     printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
                     firstFrame = true;
+                    
                 }
             }
+
+            imageWidth = stImageInfo.nWidth;
+            imageHeight = stImageInfo.nHeight;
 
             //if (MV_OK == nRet)
             //{
@@ -320,8 +325,8 @@ void ObserveImage(string port_name, void* handle)
                     try
                     {
                         Mat resizedRgbImage;
-                        rgbImageWidth = desktopWidth / 2;
-                        rgbImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
+                        resizedImageWidth = desktopWidth / 2;
+                        resizedImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
 
                         if (hasFragment)
                         {
@@ -374,8 +379,8 @@ void ObserveImage(string port_name, void* handle)
                             rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
                         }
 
-                        resize(rgbImage, resizedRgbImage, Size(rgbImageWidth, rgbImageHeight));
-                        resizedRgbImage.copyTo(matFinal(Rect(0, 0, rgbImageWidth, rgbImageHeight)));
+                        resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
+                        resizedRgbImage.copyTo(matFinal(Rect(0, 0, resizedImageWidth, resizedImageHeight)));
                         textY = resizedRgbImage.rows + 30;
 
                         Mat resizedOriginalCrop;
@@ -388,14 +393,14 @@ void ObserveImage(string port_name, void* handle)
                                 int originalCropWidth = desktopWidth / 2;
                                 int originalCropHeight = desktopWidth * originalCrop.rows / originalCrop.cols / 2;
                                 resize(originalCrop, resizedOriginalCrop, Size(originalCropWidth, originalCropHeight));
-                                resizedOriginalCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, originalCropWidth, originalCropHeight)));
+                                resizedOriginalCrop.copyTo(matFinal(Rect(resizedImageWidth, 0, originalCropWidth, originalCropHeight)));
                             }
                             else
                             {
                                 int currentCropWidth = desktopWidth / 2;
                                 int currentCropHeight = desktopWidth * currentCrop.rows / currentCrop.cols / 2;
                                 resize(currentCrop, resizedCurrentCrop, Size(currentCropWidth, currentCropHeight));
-                                resizedCurrentCrop.copyTo(matFinal(Rect(rgbImageWidth, 0, currentCropWidth, currentCropHeight)));
+                                resizedCurrentCrop.copyTo(matFinal(Rect(resizedImageWidth, 0, currentCropWidth, currentCropHeight)));
                             }
                             showOriginal = !showOriginal;
 
