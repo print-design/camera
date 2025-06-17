@@ -48,14 +48,30 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-    if (event == EVENT_LBUTTONUP)
+    if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight)
     {
-        if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight)
+        if (event == EVENT_LBUTTONDOWN)
         {
-            fragmentX = 200;
-            fragmentY = 200;
-            fragmentWidth = 600;
-            fragmentHeight = 600;
+            drawFragmentX1 = x;
+            drawFragmentY1 = y;
+        }
+        else if (event == EVENT_LBUTTONUP)
+        {
+            drawFragmentX2 = x;
+            drawFragmentY2 = y;
+
+            int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
+            int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
+            int drawFragmentYmin = drawFragmentY1 < drawFragmentY2 ? drawFragmentY1 : drawFragmentY2;
+            int drawFragmentYmax = drawFragmentY1 > drawFragmentY2 ? drawFragmentY1 : drawFragmentY2;
+
+            if (drawFragmentXmin < drawFragmentXmax && drawFragmentYmin < drawFragmentYmax)
+            {
+                fragmentX = drawFragmentXmin;
+                fragmentY = drawFragmentYmin;
+                fragmentWidth = drawFragmentXmax - drawFragmentXmin;
+                fragmentHeight = drawFragmentYmax - drawFragmentYmin;
+            }
         }
     }
 }
