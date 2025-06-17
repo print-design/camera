@@ -14,6 +14,7 @@
 using namespace cv;
 using namespace std;
 
+atomic<bool> hasFragment = false;
 atomic<bool> brak = false;
 atomic<bool> stop = false;
 atomic<bool> switchedOff = false;
@@ -35,12 +36,28 @@ atomic<int> drawFragmentY2 = 0;
 atomic<int> rgbImageWidth = 0;
 atomic<int> rgbImageHeight = 0;
 
+atomic<int> desktopWidth = 0;
+atomic<int> desktopHeight = 0;
+
 void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
-    if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
+    if (event == EVENT_LBUTTONDOWN)
     {
-        if (event == EVENT_LBUTTONDOWN)
+        if (x >= switchOffRectLeft && x <= switchOffRectLeft + switchOffRectWidth && y >= switchOffRectTop && y <= switchOffRectTop + switchOffRectHeight)
         {
+            switchedOff = true;
+        }
+        else if(rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight && desktopWidth > 0 && desktopHeight > 0)
+        {
+            drawFragmentX2 = 0;
+            drawFragmentY2 = 0;
+
+            fragmentX = 0;
+            fragmentY = 0;
+            fragmentWidth = 0;
+            fragmentHeight = 0;
+
+            hasFragment = false;
             switchedOff = true;
         }
     }
@@ -48,7 +65,7 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-    if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight)
+    if (rgbImageWidth > 0 && rgbImageHeight > 0 && x <= rgbImageWidth && y <= rgbImageHeight && desktopWidth > 0 && desktopHeight > 0)
     {
         if (event == EVENT_LBUTTONDOWN)
         {
@@ -67,10 +84,10 @@ void DrawFragment(int event, int x, int y, int flags, void* userdata)
 
             if (drawFragmentXmin < drawFragmentXmax && drawFragmentYmin < drawFragmentYmax)
             {
-                fragmentX = drawFragmentXmin;
-                fragmentY = drawFragmentYmin;
-                fragmentWidth = drawFragmentXmax - drawFragmentXmin;
-                fragmentHeight = drawFragmentYmax - drawFragmentYmin;
+                fragmentX = drawFragmentXmin * desktopWidth / rgbImageWidth;
+                fragmentY = drawFragmentYmin * desktopHeight / rgbImageHeight;
+                fragmentWidth = (drawFragmentXmax - drawFragmentXmin) * desktopWidth / rgbImageWidth;
+                fragmentHeight = (drawFragmentYmax - drawFragmentYmin) * desktopHeight / rgbImageHeight;
             }
         }
     }
@@ -161,7 +178,6 @@ void ObserveImage(string port_name, void* handle)
     
     Mat fragment;
     Mat original;
-    bool hasFragment = false;
     Mat result;
 
     int textX = 300;
@@ -216,8 +232,8 @@ void ObserveImage(string port_name, void* handle)
         RECT desktop;
         const HWND hDesktop = GetDesktopWindow();
         GetWindowRect(hDesktop, &desktop);
-        int desktopWidth = desktop.right;
-        int desktopHeight = desktop.bottom;
+        desktopWidth = desktop.right;
+        desktopHeight = desktop.bottom;
         namedWindow("Final", WINDOW_NORMAL);
         bool firstFrame = false;
 
@@ -387,7 +403,7 @@ void ObserveImage(string port_name, void* handle)
                             int normOriginalCrop = norm(originalCrop);
                             int cropsDifferencePercent = abs(normOriginalCrop - normCurrentCrop) * 100 / normOriginalCrop;
 
-                            if(cropsDifferencePercent < 5)
+                            if(cropsDifferencePercent < 3)
                             {
                                 putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                                 switchedOff = false;
