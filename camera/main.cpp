@@ -492,7 +492,7 @@ void ObserveImage(string port_name, void* handle)
                         }
 
                         imshow(FINAL_WINDOW, matFinal);
-                         
+                        
                         if (hasFragment)
                         {
                             originalCrop.release();
@@ -500,6 +500,7 @@ void ObserveImage(string port_name, void* handle)
                             resizedOriginalCrop.release();
                             resizedCurrentCrop.release();
                         }
+
                         rgbImage.release();
                         resizedRgbImage.release();
                         matFinal.release();

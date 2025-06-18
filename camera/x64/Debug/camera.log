@@ -4,8 +4,8 @@ C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(11,10): warning C406
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(12,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(448,49): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(449,50): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(519,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 513
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(546,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(567,11): warning C4101: szBuffer: неиспользованная локальная переменная
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(566,10): warning C4101: dev_mfg: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(520,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 514
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(547,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(568,11): warning C4101: szBuffer: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(567,10): warning C4101: dev_mfg: неиспользованная локальная переменная
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe

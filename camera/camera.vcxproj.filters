@@ -40,7 +40,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Pictures\stopsignal.png">
+    <Image Include="controlzone.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="stopsignal.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
