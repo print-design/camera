@@ -24,10 +24,10 @@ atomic<int> switchOffRectLeft = 0;
 atomic<int> switchOffRectWidth = 0;
 atomic<int> switchOffRectHeight = 0;
 
-atomic<int> fragmentX = 0; // 200;
-atomic<int> fragmentY = 0; // 200;
-atomic<int> fragmentWidth = 0; // 600;
-atomic<int> fragmentHeight = 0; // 600;
+atomic<int> fragmentX = 0;
+atomic<int> fragmentY = 0;
+atomic<int> fragmentWidth = 0;
+atomic<int> fragmentHeight = 0;
 
 atomic<int> rectangleX = 0;
 atomic<int> rectangleY = 0;
@@ -467,11 +467,23 @@ void ObserveImage(string port_name, void* handle)
                                 {
                                     switchOffRectLeft = textX + 200;
                                     switchOffRectTop = textY - 30;
-                                    switchOffRectWidth = 200;
-                                    switchOffRectHeight = 40;
-                                    Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
-                                    rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
-                                    putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+
+                                    Mat imgStopSignal = imread("stopsignal.png");
+
+                                    if (imgStopSignal.data == NULL)
+                                    {
+                                        switchOffRectWidth = 200;
+                                        switchOffRectHeight = 40;
+                                        Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
+                                        rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
+                                        putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
+                                    }
+                                    else
+                                    {
+                                        switchOffRectWidth = imgStopSignal.cols;
+                                        switchOffRectHeight = imgStopSignal.rows;
+                                        imgStopSignal.copyTo(matFinal(Rect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight)));
+                                    }
                                 }
                             }
 
@@ -480,7 +492,7 @@ void ObserveImage(string port_name, void* handle)
                         }
 
                         imshow(FINAL_WINDOW, matFinal);
-
+                         
                         if (hasFragment)
                         {
                             originalCrop.release();
