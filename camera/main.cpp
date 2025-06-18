@@ -46,7 +46,7 @@ atomic<int> resizedImageHeight = 0;
 atomic<int> windowWidth = 0;
 atomic<int> windowHeight = 0;
 
-void StopSignal(int event, int x, int y, int flags, void* userdata)
+static void StopSignal(int event, int x, int y, int flags, void* userdata)
 {
     if (event == EVENT_LBUTTONDOWN)
     {
@@ -70,7 +70,7 @@ void StopSignal(int event, int x, int y, int flags, void* userdata)
     }
 }
 
-void DrawFragment(int event, int x, int y, int flags, void* userdata)
+static void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
     if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
     {
@@ -472,7 +472,6 @@ void ObserveImage(string port_name, void* handle)
                                     Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
                                     rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
                                     putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                                    setMouseCallback(FINAL_WINDOW, StopSignal, NULL);
                                 }
                             }
 
