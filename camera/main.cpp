@@ -210,7 +210,7 @@ void ObserveImage(string port_name, void* handle)
     Mat original;
     Mat result;
 
-    int textX = 300;
+    int textX = 0;
     int textY = 500;
 
     int method = TM_CCOEFF_NORMED;
@@ -412,12 +412,12 @@ void ObserveImage(string port_name, void* handle)
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                             }
 
-                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 5);
+                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 7);
                         }
 
                         if (rectangleX > 0 && rectangleY > 0 && rectangleWidth > 0 && rectangleHeight > 0)
                         {
-                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 5);
+                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 7);
                         }
 
                         resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
