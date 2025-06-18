@@ -18,7 +18,6 @@ atomic<bool> hasFragment = false;
 atomic<bool> brak = false;
 atomic<bool> stop = false;
 atomic<bool> switchedOff = false;
-atomic<bool> mouseMoving = false;
 
 atomic<int> switchOffRectTop = 0;
 atomic<int> switchOffRectLeft = 0;
@@ -29,6 +28,11 @@ atomic<int> fragmentX = 0; // 200;
 atomic<int> fragmentY = 0; // 200;
 atomic<int> fragmentWidth = 0; // 600;
 atomic<int> fragmentHeight = 0; // 600;
+
+atomic<int> rectangleX = 0;
+atomic<int> rectangleY = 0;
+atomic<int> rectangleWidth = 0;
+atomic<int> rectangleHeight = 0;
 
 atomic<int> drawFragmentX1 = 0;
 atomic<int> drawFragmentY1 = 0;
@@ -75,18 +79,28 @@ void DrawFragment(int event, int x, int y, int flags, void* userdata)
             drawFragmentX1 = x;
             drawFragmentY1 = y;
         }
-        else if (event == (EVENT_MOUSEMOVE | EVENT_LBUTTONDOWN))
+        else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
-            mouseMoving = true;
-            cout << "MOVE" << endl;
+
+            int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
+            int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
+            int drawFragmentYmin = drawFragmentY1 < drawFragmentY2 ? drawFragmentY1 : drawFragmentY2;
+            int drawFragmentYmax = drawFragmentY1 > drawFragmentY2 ? drawFragmentY1 : drawFragmentY2;
+
+            if (drawFragmentXmin < drawFragmentXmax && drawFragmentYmin < drawFragmentYmax)
+            {
+                rectangleX = (drawFragmentXmin * desktopWidth / resizedImageWidth) * imageWidth / desktopWidth;
+                rectangleY = (drawFragmentYmin * desktopHeight / resizedImageHeight) * imageHeight / desktopHeight;
+                rectangleWidth = ((drawFragmentXmax - drawFragmentXmin) * desktopWidth / resizedImageWidth) * imageWidth / desktopWidth;
+                rectangleHeight = ((drawFragmentYmax - drawFragmentYmin) * desktopHeight / resizedImageHeight) * imageHeight / desktopHeight;
+            }
         }
         else if (event == EVENT_LBUTTONUP)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
-            mouseMoving = false;
 
             int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
             int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
@@ -100,6 +114,11 @@ void DrawFragment(int event, int x, int y, int flags, void* userdata)
                 fragmentWidth = ((drawFragmentXmax - drawFragmentXmin) * desktopWidth / resizedImageWidth) * imageWidth / desktopWidth;
                 fragmentHeight = ((drawFragmentYmax - drawFragmentYmin) * desktopHeight / resizedImageHeight) * imageHeight / desktopHeight;
             }
+
+            rectangleX = 0;
+            rectangleY = 0;
+            rectangleWidth = 0;
+            rectangleHeight = 0;
         }
     }
 }
@@ -389,14 +408,14 @@ void ObserveImage(string port_name, void* handle)
                             rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
                         }
 
+                        if (rectangleX > 0 && rectangleY > 0 && rectangleWidth > 0 && rectangleHeight > 0)
+                        {
+                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 2);
+                        }
+
                         resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
                         resizedRgbImage.copyTo(matFinal(Rect(0, 0, resizedImageWidth, resizedImageHeight)));
                         textY = resizedRgbImage.rows + 30;
-
-                        while (mouseMoving)
-                        {
-                            //
-                        }
                         
                         Mat resizedOriginalCrop;
                         Mat resizedCurrentCrop;
