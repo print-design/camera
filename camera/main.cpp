@@ -215,6 +215,7 @@ void ObserveImage(string port_name, void* handle)
 
     int method = TM_CCOEFF_NORMED;
     MVCC_INTVALUE stParam;
+    string FINAL_WINDOW = "Final";
 
     memset(&stParam, 0, sizeof(MVCC_INTVALUE));
     nRet = MV_CC_GetIntValue(handle, "PayloadSize", &stParam);
@@ -264,7 +265,7 @@ void ObserveImage(string port_name, void* handle)
         GetWindowRect(hDesktop, &desktop);
         desktopWidth = desktop.right;
         desktopHeight = desktop.bottom;
-        namedWindow("Final", WINDOW_NORMAL);
+        namedWindow(FINAL_WINDOW, WINDOW_NORMAL);
         bool firstFrame = false;
 
         while (1)
@@ -313,11 +314,11 @@ void ObserveImage(string port_name, void* handle)
                                 fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
                                 result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
                                 hasFragment = true;
-                                setMouseCallback("Final", StopSignal, NULL);
+                                setMouseCallback(FINAL_WINDOW, StopSignal, NULL);
                             }
                             else
                             {
-                                setMouseCallback("Final", DrawFragment, NULL);
+                                setMouseCallback(FINAL_WINDOW, DrawFragment, NULL);
                             }
                         }
 
@@ -455,7 +456,7 @@ void ObserveImage(string port_name, void* handle)
                                     Rect switchOffRect(switchOffRectLeft, switchOffRectTop, switchOffRectWidth, switchOffRectHeight);
                                     rectangle(matFinal, switchOffRect, Scalar(0, 0, 255), -1);
                                     putText(matFinal, "Stop signal", Point(textX + 210, textY), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 255, 9));
-                                    setMouseCallback("Final", StopSignal, NULL);
+                                    setMouseCallback(FINAL_WINDOW, StopSignal, NULL);
                                 }
                             }
 
@@ -463,7 +464,7 @@ void ObserveImage(string port_name, void* handle)
                             putText(matFinal, text, Point(textX, textY + 40), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                         }
 
-                        imshow("Final", matFinal);
+                        imshow(FINAL_WINDOW, matFinal);
 
                         if (hasFragment)
                         {
