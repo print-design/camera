@@ -279,7 +279,7 @@ void ObserveImage(string port_name, void* handle)
                 {
                     printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
                     firstFrame = true;
-                    
+
                 }
             }
 
@@ -302,47 +302,47 @@ void ObserveImage(string port_name, void* handle)
                 }
                 else
                 {
-                    if (!hasFragment)
-                    {
-                        if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
-                        {
-                            fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
-                            rgbImage.copyTo(original);
-                            fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
-                            result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
-                            hasFragment = true;
-                            setMouseCallback("Final", StopSignal, NULL);
-                        }
-                        else
-                        {
-                            setMouseCallback("Final", DrawFragment, NULL);
-                        }
-                    }
-
-                    int DeltaX = 0;
-                    int DeltaY = 0;
-
-                    double minVal;
-                    double maxVal;
-                    Point minLoc;
-                    Point maxLoc;
-                    Point matchLoc;
-
-                    if (hasFragment)
-                    {
-                        matchTemplate(rgbImage, fragment, result, method);
-                        minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
-
-                        DeltaX = maxLoc.x - fragmentX;
-                        DeltaY = maxLoc.y - fragmentY;
-                    }
-
-                    Mat currentCrop;
-                    Mat originalCrop;
-                    Mat matFinal(desktopHeight, desktopWidth, CV_8UC3);
-
                     try
                     {
+                        if (!hasFragment)
+                        {
+                            if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
+                            {
+                                fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
+                                rgbImage.copyTo(original);
+                                fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
+                                result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
+                                hasFragment = true;
+                                setMouseCallback("Final", StopSignal, NULL);
+                            }
+                            else
+                            {
+                                setMouseCallback("Final", DrawFragment, NULL);
+                            }
+                        }
+
+                        int DeltaX = 0;
+                        int DeltaY = 0;
+
+                        double minVal;
+                        double maxVal;
+                        Point minLoc;
+                        Point maxLoc;
+                        Point matchLoc;
+
+                        if (hasFragment)
+                        {
+                            matchTemplate(rgbImage, fragment, result, method);
+                            minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+
+                            DeltaX = maxLoc.x - fragmentX;
+                            DeltaY = maxLoc.y - fragmentY;
+                        }
+
+                        Mat currentCrop;
+                        Mat originalCrop;
+                        Mat matFinal(desktopHeight, desktopWidth, CV_8UC3);
+
                         Mat resizedRgbImage;
                         resizedImageWidth = desktopWidth / 2;
                         resizedImageHeight = desktopWidth * rgbImage.rows / rgbImage.cols / 2;
@@ -406,7 +406,7 @@ void ObserveImage(string port_name, void* handle)
                         resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
                         resizedRgbImage.copyTo(matFinal(Rect(0, 0, resizedImageWidth, resizedImageHeight)));
                         textY = resizedRgbImage.rows + 30;
-                        
+
                         Mat resizedOriginalCrop;
                         Mat resizedCurrentCrop;
 
@@ -432,7 +432,7 @@ void ObserveImage(string port_name, void* handle)
                             int normOriginalCrop = norm(originalCrop);
                             int cropsDifferencePercent = abs(normOriginalCrop - normCurrentCrop) * 100 / normOriginalCrop;
 
-                            if(cropsDifferencePercent < 3)
+                            if (cropsDifferencePercent < 3)
                             {
                                 putText(matFinal, "OK", Point(textX, textY), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
                                 switchedOff = false;
@@ -464,7 +464,7 @@ void ObserveImage(string port_name, void* handle)
                         }
 
                         imshow("Final", matFinal);
-                        
+
                         if (hasFragment)
                         {
                             originalCrop.release();
@@ -484,11 +484,15 @@ void ObserveImage(string port_name, void* handle)
                     }
                     catch (std::exception stde)
                     {
-                        putText(matFinal, cv::format("std exception: %s", stde.what()), Point(textX, textY + 80), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        cout << "std exception: " << stde.what() << endl;
+                        stop = true;
+                        break;
                     }
                     catch (cv::Exception cve)
                     {
-                        putText(matFinal, cv::format("cv exception: %s - %s", cve.err, cve.msg), Point(textX, textY + 80), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                        cout << "cv exception: " << cve.err << " - " << cve.msg << endl;
+                        stop = true;
+                        break;
                     }
                 }
             }
@@ -659,8 +663,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
+    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
     if (MV_OK != nRet)
     {
         printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);
