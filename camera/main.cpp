@@ -286,16 +286,6 @@ void ObserveImage(string port_name, void* handle)
             imageWidth = stImageInfo.nWidth;
             imageHeight = stImageInfo.nHeight;
 
-            //if (MV_OK == nRet)
-            //{
-            //    printf("Get One Frame: Width[%d], Height[%d], FrameNum[%d]\n", stImageInfo.nWidth, stImageInfo.nHeight, stImageInfo.nFrameNum);
-            //}
-            //else
-            //{
-            //    printf("Get Frame fail! nRet [0x%x]\n", nRet);
-            //    break;
-            //}
-
             if (NULL == pData)
             {
                 printf("NULL info or data.\n");
@@ -405,12 +395,12 @@ void ObserveImage(string port_name, void* handle)
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                             }
 
-                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 2);
+                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 5);
                         }
 
                         if (rectangleX > 0 && rectangleY > 0 && rectangleWidth > 0 && rectangleHeight > 0)
                         {
-                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 2);
+                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 5);
                         }
 
                         resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
@@ -669,8 +659,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
+    //nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    nRet = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON);
     if (MV_OK != nRet)
     {
         printf("Set Trigger Mode fail! nRet [0x%x]\n", nRet);

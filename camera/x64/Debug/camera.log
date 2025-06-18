@@ -2,10 +2,10 @@
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(11,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(12,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(441,49): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(442,50): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(499,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 495
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(524,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(545,11): warning C4101: szBuffer: неиспользованная локальная переменная
-C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(544,10): warning C4101: dev_mfg: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(431,49): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(432,50): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(489,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 485
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(514,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(535,11): warning C4101: szBuffer: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera\main.cpp(534,10): warning C4101: dev_mfg: неиспользованная локальная переменная
   camera.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera.exe
