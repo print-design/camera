@@ -34,10 +34,10 @@ atomic<int> rectangleY = 0;
 atomic<int> rectangleWidth = 0;
 atomic<int> rectangleHeight = 0;
 
-atomic<int> controlZone = 300;
-atomic<int> controlZone = 300;
-atomic<int> controlZone = 1500;
-atomic<int> controlZone = 1500;
+atomic<int> controlZoneX = 300;
+atomic<int> controlZoneY = 300;
+atomic<int> controlZoneWidth = 1500;
+atomic<int> controlZoneHeight = 1500;
 
 atomic<int> resizedControlZoneX = 0;
 atomic<int> resizedControlZoneY = 0;
@@ -338,6 +338,11 @@ void ObserveImage(string port_name, void* handle)
 
                         if (controlZoneHeight == 0)
                             controlZoneHeight = rgbImage.rows;
+
+                        resizedControlZoneX = controlZoneX / 2;
+                        resizedControlZoneY = controlZoneX * rgbImage.rows / rgbImage.cols / 2;
+                        resizedControlZoneWidth = controlZoneWidth / 2;
+                        resizedControlZoneHeight = controlZoneWidth * rgbImage.rows / rgbImage.cols / 2;
 
                         Mat controlZone = rgbImage(Rect(controlZoneX, controlZoneY, controlZoneWidth, controlZoneHeight));
 
