@@ -34,13 +34,22 @@ atomic<int> rectangleY = 0;
 atomic<int> rectangleWidth = 0;
 atomic<int> rectangleHeight = 0;
 
+atomic<int> controlZoneX = 0;
+atomic<int> controlZoneY = 0;
+atomic<int> controlZoneWidth = 0;
+atomic<int> controlZoneHeight = 0;
+
 atomic<int> drawFragmentX1 = 0;
 atomic<int> drawFragmentY1 = 0;
 atomic<int> drawFragmentX2 = 0;
 atomic<int> drawFragmentY2 = 0;
 
+atomic<int> imageX = 0;
+atomic<int> imageY = 0;
 atomic<int> imageWidth = 0;
 atomic<int> imageHeight = 0;
+atomic<int> resizedImageX = 0;
+atomic<int> resizedImageY = 0;
 atomic<int> resizedImageWidth = 0;
 atomic<int> resizedImageHeight = 0;
 atomic<int> windowWidth = 0;
@@ -306,14 +315,22 @@ void ObserveImage(string port_name, void* handle)
                 {
                     try
                     {
+                        if (controlZoneWidth == 0)
+                            controlZoneWidth = rgbImage.cols;
+
+                        if (controlZoneHeight == 0)
+                            controlZoneHeight = rgbImage.rows;
+
+                        Mat controlZone = rgbImage(Rect(controlZoneX, controlZoneY, controlZoneWidth, controlZoneHeight));
+
                         if (!hasFragment)
                         {
                             if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
                             {
                                 fragment = Mat(fragmentHeight, fragmentWidth, CV_8UC3);
-                                rgbImage.copyTo(original);
-                                fragment = rgbImage(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
-                                result.create(rgbImage.rows - fragment.rows + 1, rgbImage.cols - fragment.cols + 1, CV_32FC1);
+                                controlZone.copyTo(original);
+                                fragment = controlZone(Rect(fragmentX, fragmentY, fragmentWidth, fragmentHeight)).clone();
+                                result.create(controlZone.rows - fragment.rows + 1, controlZone.cols - fragment.cols + 1, CV_32FC1);
                                 hasFragment = true;
                                 setMouseCallback(FINAL_WINDOW, StopSignal, NULL);
                             }
@@ -349,7 +366,7 @@ void ObserveImage(string port_name, void* handle)
 
                         if (hasFragment)
                         {
-                            matchTemplate(rgbImage, fragment, result, method);
+                            matchTemplate(controlZone, fragment, result, method);
                             minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
 
                             DeltaX = maxLoc.x - fragmentX;
@@ -362,63 +379,65 @@ void ObserveImage(string port_name, void* handle)
 
                         Mat resizedRgbImage;
                         resizedImageWidth = windowWidth / 2;
-                        resizedImageHeight = windowWidth * rgbImage.rows / rgbImage.cols / 2;
+                        resizedImageHeight = windowWidth * controlZone.rows / controlZone.cols / 2;
 
                         if (hasFragment)
                         {
                             if (DeltaX < 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX < 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX < 0 && DeltaY == 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                currentCrop = controlZone(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                                 originalCrop = original(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                             }
                             else if (DeltaX > 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX > 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(abs(DeltaX), abs(DeltaY), stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX > 0 && DeltaY == 0)
                             {
-                                currentCrop = rgbImage(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
+                                currentCrop = controlZone(Rect(abs(DeltaX), 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth - abs(DeltaX), stImageInfo.nHeight)).clone();
                             }
                             else if (DeltaX == 0 && DeltaY < 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX == 0 && DeltaY > 0)
                             {
-                                currentCrop = rgbImage(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
+                                currentCrop = controlZone(Rect(0, abs(DeltaY), stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight - abs(DeltaY))).clone();
                             }
                             else if (DeltaX == 0 && DeltaY == 0)
                             {
-                                currentCrop = rgbImage(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
+                                currentCrop = controlZone(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                                 originalCrop = original(Rect(0, 0, stImageInfo.nWidth, stImageInfo.nHeight)).clone();
                             }
 
-                            rectangle(rgbImage, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 7);
+                            rectangle(controlZone, maxLoc, Point(maxLoc.x + fragment.cols, maxLoc.y + fragment.rows), Scalar(0, 255, 9), 7);
                         }
 
                         if (rectangleX > 0 && rectangleY > 0 && rectangleWidth > 0 && rectangleHeight > 0)
                         {
-                            rectangle(rgbImage, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 7);
+                            rectangle(controlZone, Rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Scalar(0, 255, 9), 7);
                         }
+
+                        controlZone.copyTo(rgbImage(Rect(controlZoneX, controlZoneY, controlZoneWidth, controlZoneHeight)));
 
                         resize(rgbImage, resizedRgbImage, Size(resizedImageWidth, resizedImageHeight));
                         resizedRgbImage.copyTo(matFinal(Rect(0, 0, resizedImageWidth, resizedImageHeight)));
@@ -501,6 +520,7 @@ void ObserveImage(string port_name, void* handle)
                             resizedCurrentCrop.release();
                         }
 
+                        controlZone.release();
                         rgbImage.release();
                         resizedRgbImage.release();
                         matFinal.release();
