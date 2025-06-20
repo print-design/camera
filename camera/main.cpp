@@ -63,7 +63,7 @@ static void StopSignal(int event, int x, int y, int flags, void* userdata)
         {
             switchedOff = true;
         }
-        else if(resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
+        else
         {
             drawFragmentX2 = 0;
             drawFragmentY2 = 0;
@@ -81,14 +81,18 @@ static void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 static void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-    if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
+
+    if (event == EVENT_LBUTTONDOWN)
     {
-        if (event == EVENT_LBUTTONDOWN)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX1 = x;
             drawFragmentY1 = y;
         }
-        else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
+    }
+    else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
+    {
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
@@ -106,7 +110,10 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
                 rectangleHeight = ((drawFragmentYmax - drawFragmentYmin) * windowHeight / resizedImageHeight) * imageHeight / windowHeight;
             }
         }
-        else if (event == EVENT_LBUTTONUP)
+    }
+    else if (event == EVENT_LBUTTONUP)
+    {
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
@@ -123,12 +130,12 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
                 fragmentWidth = ((drawFragmentXmax - drawFragmentXmin) * windowWidth / resizedImageWidth) * imageWidth / windowWidth;
                 fragmentHeight = ((drawFragmentYmax - drawFragmentYmin) * windowHeight / resizedImageHeight) * imageHeight / windowHeight;
             }
-
-            rectangleX = 0;
-            rectangleY = 0;
-            rectangleWidth = 0;
-            rectangleHeight = 0;
         }
+
+        rectangleX = 0;
+        rectangleY = 0;
+        rectangleWidth = 0;
+        rectangleHeight = 0;
     }
 }
 
