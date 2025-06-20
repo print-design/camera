@@ -34,10 +34,15 @@ atomic<int> rectangleY = 0;
 atomic<int> rectangleWidth = 0;
 atomic<int> rectangleHeight = 0;
 
-atomic<int> controlZoneX = 300;
-atomic<int> controlZoneY = 300;
-atomic<int> controlZoneWidth = 1500;
-atomic<int> controlZoneHeight = 1500;
+atomic<int> controlZone = 300;
+atomic<int> controlZone = 300;
+atomic<int> controlZone = 1500;
+atomic<int> controlZone = 1500;
+
+atomic<int> resizedControlZoneX = 0;
+atomic<int> resizedControlZoneY = 0;
+atomic<int> resizedControlZoneWidth = 0;
+atomic<int> resizedControlZoneHeight = 0;
 
 atomic<int> drawFragmentX1 = 0;
 atomic<int> drawFragmentY1 = 0;
@@ -84,7 +89,8 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
 
     if (event == EVENT_LBUTTONDOWN)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
+            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
         {
             drawFragmentX1 = x;
             drawFragmentY1 = y;
@@ -92,7 +98,8 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
     }
     else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
+            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
@@ -113,7 +120,8 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
     }
     else if (event == EVENT_LBUTTONUP)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
+            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
