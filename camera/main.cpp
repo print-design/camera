@@ -34,16 +34,6 @@ atomic<int> rectangleY = 0;
 atomic<int> rectangleWidth = 0;
 atomic<int> rectangleHeight = 0;
 
-atomic<int> controlZoneX = 300;
-atomic<int> controlZoneY = 300;
-atomic<int> controlZoneWidth = 1500;
-atomic<int> controlZoneHeight = 1500;
-
-atomic<int> resizedControlZoneX = 0;
-atomic<int> resizedControlZoneY = 0;
-atomic<int> resizedControlZoneWidth = 0;
-atomic<int> resizedControlZoneHeight = 0;
-
 atomic<int> drawFragmentX1 = 0;
 atomic<int> drawFragmentY1 = 0;
 atomic<int> drawFragmentX2 = 0;
@@ -86,11 +76,9 @@ static void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 static void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-
     if (event == EVENT_LBUTTONDOWN)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX1 = x;
             drawFragmentY1 = y;
@@ -98,8 +86,7 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
     }
     else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
@@ -120,8 +107,7 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
     }
     else if (event == EVENT_LBUTTONUP)
     {
-        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+        if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && x <= resizedImageWidth && y <= resizedImageHeight && windowWidth > 0 && windowHeight > 0)
         {
             drawFragmentX2 = x;
             drawFragmentY2 = y;
@@ -330,22 +316,6 @@ void ObserveImage(string port_name, void* handle)
                 {
                     try
                     {
-                        if (controlZoneWidth > 0 && controlZoneHeight > 0)
-                            rectangle(rgbImage, Point(controlZoneX, controlZoneY), Point(controlZoneX + controlZoneWidth, controlZoneY + controlZoneHeight), Scalar(0, 0, 0), 7);
-
-                        if (controlZoneWidth == 0)
-                            controlZoneWidth = rgbImage.cols;
-
-                        if (controlZoneHeight == 0)
-                            controlZoneHeight = rgbImage.rows;
-
-                        resizedControlZoneX = controlZoneX / 2;
-                        resizedControlZoneY = controlZoneX * rgbImage.rows / rgbImage.cols / 2;
-                        resizedControlZoneWidth = controlZoneWidth / 2;
-                        resizedControlZoneHeight = controlZoneWidth * rgbImage.rows / rgbImage.cols / 2;
-
-                        Mat controlZone = rgbImage(Rect(controlZoneX, controlZoneY, controlZoneWidth, controlZoneHeight));
-
                         if (!hasFragment)
                         {
                             if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
@@ -541,7 +511,6 @@ void ObserveImage(string port_name, void* handle)
                             resizedCurrentCrop.release();
                         }
 
-                        controlZone.release();
                         rgbImage.release();
                         resizedRgbImage.release();
                         matFinal.release();
