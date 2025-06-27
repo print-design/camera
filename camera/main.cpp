@@ -8,8 +8,6 @@
 #include <devguid.h>
 #include <regex>
 #include "MvCameraControl.h";
-#include "usblister.h";
-#include "comportslister.h";
 
 using namespace cv;
 using namespace std;

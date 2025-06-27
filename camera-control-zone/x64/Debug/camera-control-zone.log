@@ -1,1 +1,3 @@
-﻿  camera-control-zone.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera-control-zone.exe
+﻿  main.cpp
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+  camera-control-zone.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera-control-zone.exe
