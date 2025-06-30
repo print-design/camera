@@ -84,23 +84,28 @@ static void StopSignal(int event, int x, int y, int flags, void* userdata)
 
 static void DrawFragment(int event, int x, int y, int flags, void* userdata)
 {
-
     if (event == EVENT_LBUTTONDOWN)
     {
+        int realX = imageWidth * x / resizedImageWidth;
+        int realY = imageHeight * y / resizedImageHeight;
+
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
         {
-            drawFragmentX1 = x;
-            drawFragmentY1 = y;
+            drawFragmentX1 = realX;
+            drawFragmentY1 = realY;
         }
     }
     else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_LBUTTON)
     {
+        int realX = imageWidth * x / resizedImageWidth;
+        int realY = imageHeight * y / resizedImageHeight;
+
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
         {
-            drawFragmentX2 = x;
-            drawFragmentY2 = y;
+            drawFragmentX2 = realX;
+            drawFragmentY2 = realY;
 
             int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
             int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
@@ -118,11 +123,14 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
     }
     else if (event == EVENT_LBUTTONUP)
     {
+        int realX = imageWidth * x / resizedImageWidth;
+        int realY = imageHeight * y / resizedImageHeight;
+
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && x >= resizedControlZoneX && y >= resizedControlZoneY && x <= resizedControlZoneX + resizedControlZoneWidth && y <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
         {
-            drawFragmentX2 = x;
-            drawFragmentY2 = y;
+            drawFragmentX2 = realX;
+            drawFragmentY2 = realY;
 
             int drawFragmentXmin = drawFragmentX1 < drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
             int drawFragmentXmax = drawFragmentX1 > drawFragmentX2 ? drawFragmentX1 : drawFragmentX2;
@@ -342,8 +350,6 @@ void ObserveImage(string port_name, void* handle)
                         resizedControlZoneWidth = controlZoneWidth / 2;
                         resizedControlZoneHeight = controlZoneWidth * rgbImage.rows / rgbImage.cols / 2;
 
-                        Mat controlZone = rgbImage(Rect(controlZoneX, controlZoneY, controlZoneWidth, controlZoneHeight));
-
                         if (!hasFragment)
                         {
                             if (fragmentX > 0 && fragmentY > 0 && fragmentHeight > 0 && fragmentWidth > 0)
@@ -539,7 +545,6 @@ void ObserveImage(string port_name, void* handle)
                             resizedCurrentCrop.release();
                         }
 
-                        controlZone.release();
                         rgbImage.release();
                         resizedRgbImage.release();
                         matFinal.release();
