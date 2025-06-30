@@ -90,7 +90,7 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
         int realY = imageHeight * y / resizedImageHeight;
 
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= controlZoneX && realY >= controlZoneY && realX <= controlZoneWidth && realY <= controlZoneHeight)
         {
             drawFragmentX1 = realX;
             drawFragmentY1 = realY;
@@ -102,7 +102,7 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
         int realY = imageHeight * y / resizedImageHeight;
 
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= controlZoneX && realY >= controlZoneY && realX <= controlZoneWidth && realY <= controlZoneHeight)
         {
             drawFragmentX2 = realX;
             drawFragmentY2 = realY;
@@ -127,7 +127,7 @@ static void DrawFragment(int event, int x, int y, int flags, void* userdata)
         int realY = imageHeight * y / resizedImageHeight;
 
         if (imageWidth > 0 && imageHeight > 0 && resizedImageWidth > 0 && resizedImageHeight > 0 && windowWidth > 0 && windowHeight > 0
-            && realX >= resizedControlZoneX && realY >= resizedControlZoneY && realX <= resizedControlZoneX + resizedControlZoneWidth && realY <= resizedControlZoneY + resizedControlZoneHeight)
+            && realX >= controlZoneX && realY >= controlZoneY && realX <= controlZoneWidth && realY <= controlZoneHeight)
         {
             drawFragmentX2 = realX;
             drawFragmentY2 = realY;

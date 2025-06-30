@@ -1,9 +1,9 @@
 ﻿  main.cpp
 C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(10,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(492,49): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(493,50): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(564,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 558
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(591,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(612,11): warning C4101: szBuffer: неиспользованная локальная переменная
-C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(611,10): warning C4101: dev_mfg: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(494,49): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(495,50): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(566,21): warning C4286: cv::Exception: перехвачено базовым классом ("std::exception") в строке 560
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(593,20): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(614,11): warning C4101: szBuffer: неиспользованная локальная переменная
+C:\Users\Дмитрий\source\repos\camera\camera-control-zone\main.cpp(613,10): warning C4101: dev_mfg: неиспользованная локальная переменная
   camera-control-zone.vcxproj -> C:\Users\Дмитрий\source\repos\camera\x64\Debug\camera-control-zone.exe
